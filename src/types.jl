@@ -1,4 +1,4 @@
-export SocialAgent
+export SocialAgent, Society
 
 #############################
 #            TYPE           #
@@ -11,10 +11,13 @@ Type representing a Social Agent
 
 ### Fields
 * `moralvalues` (`Vector{Float64}`): Vector with moral dimension values of the agent
-* `cognitivecost` (`Function`): Function that describes the cognite cost of the agent
 """
-type SocialAgent{N}
+type SocialAgent{K}
     moralvalues::Vector{Float64}
+
+    function call(::Type{SocialAgent}, moral::Vector{Float64})
+        new{length(moral)}(moral)
+    end
 end
 
 """
@@ -24,12 +27,19 @@ Type representing a Society
 
 ### Fields
 * `cognitivecost` (`Function`): Function that describes the cognite cost of the agent
+* `interactionmatrix` (`Matrix{Float64}`): Matrix that describes the interactions of the agents of the society
+* `agents` (`Vector{SocialAgent}`): Vector of the `SocialAgents` of the Society
 """
-type Society{N}
+type Society{N, K}
     cognitivecost::Function
-    cognitivematrix::Matrix{Float64}
     interactionmatrix::Matrix{Float64}
-    agents::Vector{SocialAgent}
+    agents::Vector{SocialAgent{K}}
+
+    function call{K}(::Type{Society}, cognitivecost::Function,
+                 interactionmatrix::Matrix{Float64},
+                 agents::Vector{SocialAgent{K}})
+        new{length(agents), K}(cognitivecost, interactionmatrix, agents)
+    end
 end
 
 #############################
@@ -37,21 +47,21 @@ end
 #############################
 
 """
-`SocialAgent(moral::Vector{Float64})`
-
-Construct a SocialAgent with a given `moral` vector.
-"""
-function SocialAgent(moral::Vector{Float64})
-    return SocialAgent{length(moral)}(moral)
-end
-
-"""
 `SocialAgent(n::Integer)`
 
 Construct a SocialAgent with a unitary random moral vector.
 """
 function SocialAgent(n::Integer)
-    return SocialAgent{n}(rand(n))
+    return SocialAgent(rand(n))
+end
+
+"""
+`Society()`
+
+Construct a random Society with default size and default cognitive cost
+"""
+function Society()
+    return Society(defaultcogcost, 1 - eye(NSOC), SocialAgent{5}[SocialAgent(5) for i in 1:NSOC])
 end
 
 """
@@ -60,10 +70,41 @@ end
 Construct a random Society with size `n` and default cognitive cost
 """
 function Society(n::Integer)
-    Rij = 1 - eye(N)
+    return Society(defaultcogcost, 1 - eye(n), SocialAgent{5}[SocialAgent(5) for i in 1:n])
+end
 
-    for j in size(Rij, 2) for i in size(Rij, 1)
-        Vij[i][j] = defaultcogcost(i,j)
-    end end
+#############################
+#       REDEFINITIONS       #
+#############################
 
-    return Society{n}(defaultcogcost, Vij , Rij, SocialAgent{5}[SocialAgent(5) for i in 1:n])
+length(ag::SocialAgent) = length(ag.moralvalues)
+size(ag::SocialAgent)   = size(ag.moralvalues)
+
+getindex(ag::SocialAgent, i) = ag.moralvalues[i]
+
+start(ag::SocialAgent)   = 1
+done(ag::SocialAgent, s) = s > length(ag)
+next(ag::SocialAgent, s) = (ag[s], s+1)
+
+length(soc::Society)    = length(soc.agents)
+size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
+
+getindex(soc::Society, i) = soc.agents[i]
+
+start(soc::Society)   = 1
+done(soc::Society, s) = s > length(soc)
+next(soc::Society, s) = (soc[s], s+1)
+
+function show(io::IO, ag::SocialAgent)
+    N = length(ag)
+    println(io, N, "-dimensional Social Agent:")
+    for i in ag
+        @printf io " %.5f\n" i
+    end
+end
+
+function show(io::IO, soc::Society)
+    N, K = size(soc)
+    println(io, N, "-sized Society on a ", K, "-dimensional Moral space")
+    println(io, "Cognition Cost: ", soc.cognitivecost)
+end
