@@ -118,31 +118,31 @@ end
 """
 `Society()`
 
-Construct a random Society with default size and default cognitive cost
+Construct a random Society with default size (`NSOC`) and default cognitive cost (`Vij`)
 """
 function Society()
-    return Society(Vij, 1 - eye(NSOC), SocialAgent{5}[SocialAgent(5) for i in 1:NSOC])
+    return Society(Vij, 1 - eye(NSOC), SocialAgent{KMORAL}[SocialAgent(KMORAL) for i in 1:NSOC])
 end
 
 """
 `Society(n::Integer)`
 
-Construct a random Society with size `n` and default cognitive cost
+Construct a random Society with size `n` and default cognitive cost (`Vij`)
 """
 function Society(n::Integer)
-    return Society(Vij, 1 - eye(n), SocialAgent{5}[SocialAgent(5) for i in 1:n])
+    return Society(Vij, 1 - eye(n), SocialAgent{KMORAL}[SocialAgent(KMORAL) for i in 1:n])
 end
 
 """
-`Society(n::Integer)`
+`Society(Jij::Matrix{Float64})`
 
-Construct a random Society with a square `Rij` interaction matrix and default cognitive cost
+Construct a random Society with a square `Jij` interaction matrix and default cognitive cost (`Vij`)
 """
-function Society(Rij::Matrix{Float64})
-    n1, n2 = size(Rij)
+function Society(Jij::Matrix{Float64})
+    n1, n2 = size(Jij)
     if n1 != n2 error("Given interaction matrix isn't square!") end
 
-    return Society(Vij, Rij, SocialAgent{5}[SocialAgent(5) for i in 1:n1])
+    return Society(Vij, Jij, SocialAgent{KMORAL}[SocialAgent(KMORAL) for i in 1:n1])
 end
 
 ##############################
