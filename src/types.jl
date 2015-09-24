@@ -1,8 +1,8 @@
 export SocialAgent, Society
 
-#############################
-#            TYPE           #
-#############################
+##############################
+#     Social Agent Type      #
+##############################
 
 """
 `type SocialAgent`
@@ -19,6 +19,10 @@ type SocialAgent{K}
         new{length(moral)}(moral)
     end
 end
+
+##############################
+#        Society Type        #
+##############################
 
 """
 `type Society`
@@ -42,18 +46,31 @@ type Society{N, K}
     end
 end
 
-#############################
-#        CONSTRUCTORS       #
-#############################
+##############################
+#  Social Agent Constructors #
+##############################
+
+"""
+`SocialAgent()`
+
+Construct a SocialAgent with a unitary random moral vector with default number of components.
+"""
+function SocialAgent()
+    return SocialAgent(rand(KMORAL))
+end
 
 """
 `SocialAgent(n::Integer)`
 
-Construct a SocialAgent with a unitary random moral vector.
+Construct a SocialAgent with a unitary random moral vector with `n` components.
 """
 function SocialAgent(n::Integer)
     return SocialAgent(rand(n))
 end
+
+##############################
+#    Society Constructors    #
+##############################
 
 """
 `Society()`
@@ -61,7 +78,7 @@ end
 Construct a random Society with default size and default cognitive cost
 """
 function Society()
-    return Society(defaultcogcost, 1 - eye(NSOC), SocialAgent{5}[SocialAgent(5) for i in 1:NSOC])
+    return Society(Vij, 1 - eye(NSOC), SocialAgent{5}[SocialAgent(5) for i in 1:NSOC])
 end
 
 """
@@ -70,12 +87,24 @@ end
 Construct a random Society with size `n` and default cognitive cost
 """
 function Society(n::Integer)
-    return Society(defaultcogcost, 1 - eye(n), SocialAgent{5}[SocialAgent(5) for i in 1:n])
+    return Society(Vij, 1 - eye(n), SocialAgent{5}[SocialAgent(5) for i in 1:n])
 end
 
-#############################
-#       REDEFINITIONS       #
-#############################
+"""
+`Society(n::Integer)`
+
+Construct a random Society with a square `Rij` interaction matrix and default cognitive cost
+"""
+function Society(Rij::Matrix{Float64})
+    n1, n2 = size(Rij)
+    if n1 != n2 error("Given interaction matrix isn't square!") end
+
+    return Society(Vij, Rij, SocialAgent{5}[SocialAgent(5) for i in 1:n1])
+end
+
+##############################
+# Social Agent Redefinitions #
+##############################
 
 length(ag::SocialAgent) = length(ag.moralvalues)
 size(ag::SocialAgent)   = size(ag.moralvalues)
@@ -86,6 +115,18 @@ start(ag::SocialAgent)   = 1
 done(ag::SocialAgent, s) = s > length(ag)
 next(ag::SocialAgent, s) = (ag[s], s+1)
 
+function show(io::IO, ag::SocialAgent)
+    N = length(ag)
+    println(io, N, "-dimensional Social Agent:")
+    for i in ag
+        @printf io " %.5f\n" i
+    end
+end
+
+##############################
+#    Society Redefinitions   #
+##############################
+
 length(soc::Society)    = length(soc.agents)
 size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
 
@@ -95,16 +136,8 @@ start(soc::Society)   = 1
 done(soc::Society, s) = s > length(soc)
 next(soc::Society, s) = (soc[s], s+1)
 
-function show(io::IO, ag::SocialAgent)
-    N = length(ag)
-    println(io, N, "-dimensional Social Agent:")
-    for i in ag
-        @printf io " %.5f\n" i
-    end
-end
-
 function show(io::IO, soc::Society)
     N, K = size(soc)
     println(io, N, "-sized Society on a ", K, "-dimensional Moral space")
-    println(io, "Cognition Cost: ", soc.cognitivecost)
+    print(io, "Cognition Cost: ", soc.cognitivecost)
 end
