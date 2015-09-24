@@ -21,6 +21,26 @@ type SocialAgent{K}
 end
 
 ##############################
+#      Moral Issue Type      #
+##############################
+
+"""
+`type MoralIssue`
+
+Type representing a Moral Issue
+
+### Fields
+* `moralvalues` (`Vector{Float64}`): Vector with moral dimension values of the issue
+"""
+type MoralIssue{K}
+    moralvalues::Vector{Float64}
+
+    function call(::Type{MoralIssue}, moral::Vector{Float64})
+        new{length(moral)}(moral)
+    end
+end
+
+##############################
 #        Society Type        #
 ##############################
 
@@ -67,6 +87,29 @@ Construct a SocialAgent with a unitary random moral vector with `n` components.
 function SocialAgent(n::Integer)
     return SocialAgent(rand(n))
 end
+
+##############################
+#  Moral Issue Constructors  #
+##############################
+
+"""
+`MoralIssue()`
+
+Construct a MoralIssue with a unitary random moral vector with default number of components.
+"""
+function MoralIssue()
+    return MoralIssue(rand(KMORAL))
+end
+
+"""
+`MoralIssue(n::Integer)`
+
+Construct a MoralIssue with a unitary random moral vector with `n` components.
+"""
+function MoralIssue(n::Integer)
+    return MoralIssue(rand(n))
+end
+
 
 ##############################
 #    Society Constructors    #
@@ -119,6 +162,27 @@ function show(io::IO, ag::SocialAgent)
     N = length(ag)
     println(io, N, "-dimensional Social Agent:")
     for i in ag
+        @printf io " %.5f\n" i
+    end
+end
+
+##############################
+# Moral Issue Redefinitions  #
+##############################
+
+length(missue::MoralIssue) = length(missue.moralvalues)
+size(missue::MoralIssue)   = size(missue.moralvalues)
+
+getindex(missue::MoralIssue, i) = missue.moralvalues[i]
+
+start(missue::MoralIssue)   = 1
+done(missue::MoralIssue, s) = s > length(missue)
+next(missue::MoralIssue, s) = (missue[s], s+1)
+
+function show(io::IO, missue::MoralIssue)
+    N = length(missue)
+    println(io, N, "-dimensional Moral Issue:")
+    for i in missue
         @printf io " %.5f\n" i
     end
 end
