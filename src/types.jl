@@ -1,4 +1,4 @@
-export SocialAgent, Society
+export SocialAgent, MoralIssue, Society
 
 ##############################
 #     Social Agent Type      #
@@ -76,7 +76,7 @@ end
 Construct a SocialAgent with a unitary random moral vector with default number of components.
 """
 function SocialAgent()
-    return SocialAgent(rand(KMORAL))
+    return SocialAgent(2rand(KMORAL)-1)
 end
 
 """
@@ -85,7 +85,7 @@ end
 Construct a SocialAgent with a unitary random moral vector with `n` components.
 """
 function SocialAgent(n::Integer)
-    return SocialAgent(rand(n))
+    return SocialAgent(2rand(n)-1)
 end
 
 ##############################
@@ -98,7 +98,7 @@ end
 Construct a MoralIssue with a unitary random moral vector with default number of components.
 """
 function MoralIssue()
-    return MoralIssue(rand(KMORAL))
+    return MoralIssue(2rand(KMORAL)-1)
 end
 
 """
@@ -107,7 +107,7 @@ end
 Construct a MoralIssue with a unitary random moral vector with `n` components.
 """
 function MoralIssue(n::Integer)
-    return MoralIssue(rand(n))
+    return MoralIssue(2rand(n)-1)
 end
 
 
@@ -194,7 +194,11 @@ end
 length(soc::Society)    = length(soc.agents)
 size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
 
-getindex(soc::Society, i) = soc.agents[i]
+getindex(soc::Society, i::Int64) = soc.interactionmatrix[i]
+getindex(soc::Society, i::Int64, j::Int64) = soc.interactionmatrix[i, j]
+
+agents(soc::Society)           = soc.agents
+agents(soc::Society, i::Int64) = soc.agents[i]
 
 start(soc::Society)   = 1
 done(soc::Society, s) = s > length(soc)
