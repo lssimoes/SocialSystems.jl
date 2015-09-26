@@ -1,21 +1,21 @@
-export SocialAgent, MoralIssue, Society
+export MoralAgent, MoralIssue, Society
 
 ##############################
-#     Social Agent Type      #
+#      Moral Agent Type      #
 ##############################
 
 """
-`type SocialAgent`
+`type MoralAgent`
 
-Type representing a Social Agent
+Type representing a Moral Agent
 
 ### Fields
 * `moralvalues` (`Vector{Float64}`): Vector with moral dimension values of the agent
 """
-type SocialAgent{K}
+type MoralAgent{K}
     moralvalues::Vector{Float64}
 
-    function call(::Type{SocialAgent}, moral::Vector{Float64})
+    function call(::Type{MoralAgent}, moral::Vector{Float64})
         new{length(moral)}(moral)
     end
 end
@@ -52,40 +52,40 @@ Type representing a Society
 ### Fields
 * `cognitivecost` (`Function`): Function that describes the cognite cost of the agent
 * `interactionmatrix` (`Matrix{Float64}`): Matrix that describes the interactions of the agents of the society
-* `agents` (`Vector{SocialAgent}`): Vector of the `SocialAgents` of the Society
+* `agents` (`Vector{MoralAgent}`): Vector of the `MoralAgents` of the Society
 """
 type Society{N, K}
     cognitivecost::Function
     interactionmatrix::Matrix{Float64}
-    agents::Vector{SocialAgent{K}}
+    agents::Vector{MoralAgent{K}}
 
     function call{K}(::Type{Society}, cognitivecost::Function,
                  interactionmatrix::Matrix{Float64},
-                 agents::Vector{SocialAgent{K}})
+                 agents::Vector{MoralAgent{K}})
         new{length(agents), K}(cognitivecost, interactionmatrix, agents)
     end
 end
 
 ##############################
-#  Social Agent Constructors #
+#  Moral Agent Constructors  #
 ##############################
 
 """
-`SocialAgent()`
+`MoralAgent()`
 
-Construct a SocialAgent with a unitary random moral vector with default number of components.
+Construct a MoralAgent with a unitary random moral vector with default number of components.
 """
-function SocialAgent()
-    return SocialAgent(2rand(KMORAL)-1)
+function MoralAgent()
+    return MoralAgent(2rand(KMORAL)-1)
 end
 
 """
-`SocialAgent(n::Integer)`
+`MoralAgent(n::Integer)`
 
-Construct a SocialAgent with a unitary random moral vector with `n` components.
+Construct a MoralAgent with a unitary random moral vector with `n` components.
 """
-function SocialAgent(n::Integer)
-    return SocialAgent(2rand(n)-1)
+function MoralAgent(n::Integer)
+    return MoralAgent(2rand(n)-1)
 end
 
 ##############################
@@ -121,7 +121,7 @@ end
 Construct a random Society with default size (`NSOC`) and default cognitive cost (`Vij`)
 """
 function Society()
-    return Society(Vij, 1 - eye(NSOC), SocialAgent{KMORAL}[SocialAgent(KMORAL) for i in 1:NSOC])
+    return Society(Vij, 1 - eye(NSOC), MoralAgent{KMORAL}[MoralAgent(KMORAL) for i in 1:NSOC])
 end
 
 """
@@ -130,7 +130,7 @@ end
 Construct a random Society with size `n` and default cognitive cost (`Vij`)
 """
 function Society(n::Integer)
-    return Society(Vij, 1 - eye(n), SocialAgent{KMORAL}[SocialAgent(KMORAL) for i in 1:n])
+    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL}[MoralAgent(KMORAL) for i in 1:n])
 end
 
 """
@@ -142,25 +142,25 @@ function Society(Jij::Matrix{Float64})
     n1, n2 = size(Jij)
     if n1 != n2 error("Given interaction matrix isn't square!") end
 
-    return Society(Vij, Jij, SocialAgent{KMORAL}[SocialAgent(KMORAL) for i in 1:n1])
+    return Society(Vij, Jij, MoralAgent{KMORAL}[MoralAgent(KMORAL) for i in 1:n1])
 end
 
 ##############################
-# Social Agent Redefinitions #
+# Moral Agent Redefinitions  #
 ##############################
 
-length(ag::SocialAgent) = length(ag.moralvalues)
-size(ag::SocialAgent)   = size(ag.moralvalues)
+length(ag::MoralAgent) = length(ag.moralvalues)
+size(ag::MoralAgent)   = size(ag.moralvalues)
 
-getindex(ag::SocialAgent, i) = ag.moralvalues[i]
+getindex(ag::MoralAgent, i) = ag.moralvalues[i]
 
-start(ag::SocialAgent)   = 1
-done(ag::SocialAgent, s) = s > length(ag)
-next(ag::SocialAgent, s) = (ag[s], s+1)
+start(ag::MoralAgent)   = 1
+done(ag::MoralAgent, s) = s > length(ag)
+next(ag::MoralAgent, s) = (ag[s], s+1)
 
-function show(io::IO, ag::SocialAgent)
+function show(io::IO, ag::MoralAgent)
     N = length(ag)
-    println(io, N, "-dimensional Social Agent:")
+    println(io, N, "-dimensional Moral Agent:")
     for i in ag
         @printf io " %.5f\n" i
     end
@@ -194,8 +194,6 @@ end
 length(soc::Society)    = length(soc.agents)
 size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
 
-interactions(soc::Society) = soc.interactionmatrix
-
 getindex(soc::Society, i::Int64)                    = soc.interactionmatrix[i]
 getindex(soc::Society, i::Int64, j::Int64)          = soc.interactionmatrix[i, j]
 getindex(soc::Society, i::Int64, r::UnitRange)      = soc.interactionmatrix[i, r]
@@ -204,10 +202,7 @@ getindex(soc::Society, r::UnitRange, s::UnitRange)  = soc.interactionmatrix[r, s
 getindex(soc::Society, i::Int64, c::Colon)          = soc.interactionmatrix[i, c]
 getindex(soc::Society, c::Colon, j::Int64)          = soc.interactionmatrix[c, j]
 getindex(soc::Society, c::Colon, r::UnitRange)      = soc.interactionmatrix[c, r]
-getindex(soc::Society, r::UnitRange, c::Colon)      = soc.interactionmatrix[r, c] 
-
-agents(soc::Society)           = soc.agents
-agents(soc::Society, i::Int64) = soc.agents[i]
+getindex(soc::Society, r::UnitRange, c::Colon)      = soc.interactionmatrix[r, c]
 
 start(soc::Society)   = 1
 done(soc::Society, s) = s > length(soc)

@@ -1,23 +1,44 @@
 export NSOC, KMORAL
-export τ, Vij
+export interactions, agents
+
+##############################
+#          Constants         #
+##############################
 
 γ = sqrt(3)  # γ^2 = (1 - ρ^2)/ρ^2
 ϵ = 0.2      # distrust of the agents
 NSOC = 1000  # default size of the Society
 KMORAL = 5   # default size of the Moral Space
 
-"""
-`τ{K}(i::SocialAgent{K}, x::MoralIssue{K})`
-
-SocialAgent `i` opinion about MoralIssue `x`
-"""
-τ{K}(i::SocialAgent{K}, x::MoralIssue{K}) = (i.moralvalues ⋅ x.moralvalues) / sqrt(K)
+##############################
+#     Utilitary Functions    #
+##############################
 
 """
-`Vij{K}(i::SocialAgent{K}, j::SocialAgent{K}, x::MoralIssue{K})`
+`interactions(soc::Society)`
 
-Cognitive cost SocialAgent `i` suffers when learning SocialAgent `j` opinion about MoralIssue `x`
+Returns the `interactionmatrix` of a Society `soc`
 """
-function Vij{K}(i::SocialAgent{K}, j::SocialAgent{K}, x::MoralIssue{K})
-    return -γ^2 * log(ϵ + (1 - 2ϵ) * erfc(- τ(j, x) * sign(τ(i, x)) / γ) / sqrt(8))
-end
+interactions(soc::Society)     = soc.interactionmatrix
+
+"""
+`agents(soc::Society)`
+
+Returns the `agents` vector of a Society `soc`
+"""
+agents(soc::Society)           = soc.agents
+
+"""
+`agents(soc::Society, i::Int64)`
+
+Returns the `i`th `agent` of a Society `soc`
+"""
+agents(soc::Society, i::Int64) = soc.agents[i]
+
+"""
+`insertagent!{N,K}(soc::Society{N,K}, proposed::MoralAgent{K}, i::Int64)`
+
+Insert new agent `proposed` at position `i` on SOciety `soc`
+"""
+insertagent!{N,K}(soc::Society{N,K}, proposed::MoralAgent{K}, i::Int64)
+    soc.agents[i] = proposed

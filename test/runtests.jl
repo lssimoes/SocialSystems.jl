@@ -1,10 +1,10 @@
 using SocialSystems, FactCheck
 
-facts("SocialAgent") do
+facts("MoralAgent") do
     context("Create an Agent") do
-        @fact SocialAgent() --> not(nothing)
-        @fact SocialAgent(2) --> not(nothing)
-        @fact SocialAgent([1.,2,3]) --> not(nothing)
+        @fact MoralAgent() --> not(nothing)
+        @fact MoralAgent(2) --> not(nothing)
+        @fact MoralAgent([1.,2,3]) --> not(nothing)
     end
 end
 

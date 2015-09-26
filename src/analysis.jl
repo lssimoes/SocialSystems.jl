@@ -1,6 +1,8 @@
 export hamiltonian
 
+# change this design..
 cognitivecost{N,K}(soc::Society{N,K}, i::Int64, j::Int64, x::MoralIssue{K}) = soc.cognitivecost(agents(soc, i), agents(soc, j), x)
+cognitivecost{N,K}(ag::MoralAgent, soc::Society{N,K}, j::Int64, x::MoralIssue{K}) = soc.cognitivecost(ag, agents(soc, j), x)
 
 """
 `hamiltonian{N,K}(soc::Society{N,K}, x::MoralIssue{K})`
