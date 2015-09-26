@@ -22,6 +22,7 @@ function mcstep{N,K}(soc::Society{N,K}, x::MoralIssue{K})
 
     oldcost     = cognitivecost(soc, i, j, x)
 
+    # Sample a a new MoralAgent using a MultivariateGaussian centered at the old Agent
     proposed = MoralAgent(rand(MvNormal(agents(soc,i).moralvalues, ones(5))))
     newcost  = cognitivecost(proposed, soc, j, x)
 
