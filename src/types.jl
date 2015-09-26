@@ -194,8 +194,17 @@ end
 length(soc::Society)    = length(soc.agents)
 size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
 
-getindex(soc::Society, i::Int64) = soc.interactionmatrix[i]
-getindex(soc::Society, i::Int64, j::Int64) = soc.interactionmatrix[i, j]
+interactions(soc::Society) = soc.interactionmatrix
+
+getindex(soc::Society, i::Int64)                    = soc.interactionmatrix[i]
+getindex(soc::Society, i::Int64, j::Int64)          = soc.interactionmatrix[i, j]
+getindex(soc::Society, i::Int64, r::UnitRange)      = soc.interactionmatrix[i, r]
+getindex(soc::Society, r::UnitRange, j::Int64)      = soc.interactionmatrix[r, j]
+getindex(soc::Society, r::UnitRange, s::UnitRange)  = soc.interactionmatrix[r, s]
+getindex(soc::Society, i::Int64, c::Colon)          = soc.interactionmatrix[i, c]
+getindex(soc::Society, c::Colon, j::Int64)          = soc.interactionmatrix[c, j]
+getindex(soc::Society, c::Colon, r::UnitRange)      = soc.interactionmatrix[c, r]
+getindex(soc::Society, r::UnitRange, c::Colon)      = soc.interactionmatrix[r, c] 
 
 agents(soc::Society)           = soc.agents
 agents(soc::Society, i::Int64) = soc.agents[i]
