@@ -1,5 +1,5 @@
 export NSOC, KMORAL
-export interactions, agents
+export interactions, agents, insertagent!
 
 ##############################
 #          Constants         #
@@ -36,9 +36,9 @@ Returns the `i`th `agent` of a Society `soc`
 agents(soc::Society, i::Int64) = soc.agents[i]
 
 """
-`insertagent!{N,K}(soc::Society{N,K}, proposed::MoralAgent{K}, i::Int64)`
+`insertagent!{N,K,T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64)`
 
 Insert new agent `proposed` at position `i` on SOciety `soc`
 """
-insertagent!{N,K}(soc::Society{N,K}, proposed::MoralAgent{K}, i::Int64)
+insertagent!{N, K, T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64) =
     soc.agents[i] = proposed

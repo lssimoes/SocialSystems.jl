@@ -1,22 +1,22 @@
 export τ, Vij
 
 """
-`τ{K}(i::MoralAgent{K}, x::MoralIssue{K})`
+`τ{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
 
 MoralAgent `i` opinion about MoralIssue `x`
 """
-τ{K}(i::MoralAgent{K}, x::MoralIssue{K}) = (i.moralvalues ⋅ x.moralvalues) / sqrt(K)
+τ{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T}) = (i.moralvalues ⋅ x.moralvalues) / sqrt(K)
 
 """
-`Vij{K}(i::MoralAgent{K}, j::MoralAgent{K}, x::MoralIssue{K})`
+`Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T})`
 
 Cognitive cost MoralAgent `i` suffers when learning MoralAgent `j` opinion about MoralIssue `x`
 """
-function Vij{K}(i::MoralAgent{K}, j::MoralAgent{K}, x::MoralIssue{K})
+function Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T})
     return -γ^2 * log(ϵ + (1 - 2ϵ) * erfc(- τ(j, x) * sign(τ(i, x)) / γ) / sqrt(8))
 end
 
-function mcstep{N,K}(soc::Society{N,K}, x::MoralIssue{K})
+function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
@@ -27,6 +27,7 @@ function mcstep{N,K}(soc::Society{N,K}, x::MoralIssue{K})
     newcost  = cognitivecost(proposed, soc, j, x)
 
     ΔV = newcost - oldcost
+    # transistion probability
     p_trans  =  (ΔV < 0 ? 1 : exp(-β*soc[i, j]*ΔV) )
 
     if rand() < p_trans
@@ -35,4 +36,15 @@ function mcstep{N,K}(soc::Society{N,K}, x::MoralIssue{K})
     end
 
     return agents(soc, i)
+end
+
+function metropolis{N,K,T}(soc::Society{N,K,T})
+    # fix this later
+    iter = 20000
+    variations = MoralAgent[]
+    x = MoralIssue()
+
+    for i in 1:iter
+        push!(variations, metropolisstep(soc, x))
+    end
 end

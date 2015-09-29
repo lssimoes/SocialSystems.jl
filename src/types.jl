@@ -5,18 +5,18 @@ export MoralAgent, MoralIssue, Society
 ##############################
 
 """
-`type MoralAgent`
+`type MoralAgent{K, T <: Real}`
 
 Type representing a Moral Agent
 
 ### Fields
-* `moralvalues` (`Vector{Float64}`): Vector with moral dimension values of the agent
+* `moralvalues` (`Vector{T}`): K-vector with moral dimension values of the agent
 """
-type MoralAgent{K}
-    moralvalues::Vector{Float64}
+type MoralAgent{K, T <: Real}
+    moralvalues::Vector{T}
 
-    function call(::Type{MoralAgent}, moral::Vector{Float64})
-        new{length(moral)}(moral)
+    function call{T}(::Type{MoralAgent}, moral::Vector{T})
+        new{length(moral), T}(moral)
     end
 end
 
@@ -25,18 +25,18 @@ end
 ##############################
 
 """
-`type MoralIssue`
+`type MoralIssue{K, T <: Real}`
 
 Type representing a Moral Issue
 
 ### Fields
-* `moralvalues` (`Vector{Float64}`): Vector with moral dimension values of the issue
+* `moralvalues` (`Vector{T}`): K-vector with moral dimension values of the issue
 """
-type MoralIssue{K}
-    moralvalues::Vector{Float64}
+type MoralIssue{K, T <: Real}
+    moralvalues::Vector{T}
 
-    function call(::Type{MoralIssue}, moral::Vector{Float64})
-        new{length(moral)}(moral)
+    function call{T}(::Type{MoralIssue}, moral::Vector{T})
+        new{length(moral), T}(moral)
     end
 end
 
@@ -45,24 +45,24 @@ end
 ##############################
 
 """
-`type Society`
+`type Society{N,K, T}`
 
 Type representing a Society
 
 ### Fields
 * `cognitivecost` (`Function`): Function that describes the cognite cost of the agent
-* `interactionmatrix` (`Matrix{Float64}`): Matrix that describes the interactions of the agents of the society
-* `agents` (`Vector{MoralAgent}`): Vector of the `MoralAgents` of the Society
+* `interactionmatrix` (`Matrix{T}`): N×N-matrix that describes the interactions of the agents of the society
+* `agents` (`Vector{MoralAgent}`): N-vector of the `MoralAgent{K, T}`s of the Society
 """
-type Society{N, K}
+type Society{N, K, T <: Real}
     cognitivecost::Function
     interactionmatrix::Matrix{Float64}
     agents::Vector{MoralAgent{K}}
 
-    function call{K}(::Type{Society}, cognitivecost::Function,
+    function call{K, T}(::Type{Society}, cognitivecost::Function,
                  interactionmatrix::Matrix{Float64},
-                 agents::Vector{MoralAgent{K}})
-        new{length(agents), K}(cognitivecost, interactionmatrix, agents)
+                 agents::Vector{MoralAgent{K, T}})
+        new{length(agents), K, T}(cognitivecost, interactionmatrix, agents)
     end
 end
 
@@ -73,7 +73,7 @@ end
 """
 `MoralAgent()`
 
-Construct a MoralAgent with a unitary random moral vector with default number of components.
+Construct a MoralAgent with a unitary random moral vector with default number of components (`KMORAL`).
 """
 function MoralAgent()
     return MoralAgent(2rand(KMORAL)-1)
@@ -95,7 +95,7 @@ end
 """
 `MoralIssue()`
 
-Construct a MoralIssue with a unitary random moral vector with default number of components.
+Construct a MoralIssue with a unitary random moral vector with default number of components (`KMORAL`).
 """
 function MoralIssue()
     return MoralIssue(2rand(KMORAL)-1)
@@ -118,31 +118,34 @@ end
 """
 `Society()`
 
-Construct a random Society with default size (`NSOC`) and default cognitive cost (`Vij`)
+Construct a random Society with default size (`NSOC`) and default cognitive cost (`Vij`).
+The agents have the default number of components (`KMORAL`)
 """
 function Society()
-    return Society(Vij, 1 - eye(NSOC), MoralAgent{KMORAL}[MoralAgent(KMORAL) for i in 1:NSOC])
+    return Society(Vij, 1 - eye(NSOC), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:NSOC])
 end
 
 """
 `Society(n::Integer)`
 
 Construct a random Society with size `n` and default cognitive cost (`Vij`)
+The agents have the default number of components (`KMORAL`)
 """
 function Society(n::Integer)
-    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL}[MoralAgent(KMORAL) for i in 1:n])
+    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n])
 end
 
 """
 `Society(Jij::Matrix{Float64})`
 
 Construct a random Society with a square `Jij` interaction matrix and default cognitive cost (`Vij`)
+The agents have the default number of components (`KMORAL`)
 """
 function Society(Jij::Matrix{Float64})
     n1, n2 = size(Jij)
     if n1 != n2 error("Given interaction matrix isn't square!") end
 
-    return Society(Vij, Jij, MoralAgent{KMORAL}[MoralAgent(KMORAL) for i in 1:n1])
+    return Society(Vij, Jij, MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n1])
 end
 
 ##############################
