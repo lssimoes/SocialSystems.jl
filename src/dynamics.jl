@@ -1,4 +1,4 @@
-export τ, Vij
+export τ, Vij, metropolisstep
 
 """
 `τ{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
