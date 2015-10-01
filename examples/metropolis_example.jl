@@ -14,3 +14,4 @@ end
 
 using PyPlot
 plot(collect(1:20000), hi)
+savefig("metroplot.png")
