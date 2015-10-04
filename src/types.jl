@@ -16,7 +16,10 @@ type MoralAgent{K, T <: Real}
     moralvalues::Vector{T}
 
     function call{T}(::Type{MoralAgent}, moral::Vector{T})
-        new{length(moral), T}(moral)
+        normaliz = sqrt(moral⋅moral)
+        sqrtk = sqrt(length(moral))
+
+        new{length(moral), T}(sqrtk*moral/normaliz)
     end
 end
 
@@ -36,7 +39,10 @@ type MoralIssue{K, T <: Real}
     moralvalues::Vector{T}
 
     function call{T}(::Type{MoralIssue}, moral::Vector{T})
-        new{length(moral), T}(moral)
+        normaliz = sqrt(moral⋅moral)
+        sqrtk = sqrt(length(moral))
+
+        new{length(moral), T}(sqrtk*moral/normaliz)
     end
 end
 
@@ -45,7 +51,7 @@ end
 ##############################
 
 """
-`type Society{N,K, T}`
+`type Society{N, K, T}`
 
 Type representing a Society
 
@@ -109,7 +115,6 @@ Construct a MoralIssue with a unitary random moral vector with `n` components.
 function MoralIssue(n::Integer)
     return MoralIssue(2rand(n)-1)
 end
-
 
 ##############################
 #    Society Constructors    #

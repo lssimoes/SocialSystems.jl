@@ -1,11 +1,11 @@
-export τ, Vij, metropolisstep
+export hopinion, Vij, metropolisstep
 
 """
-`τ{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
+`hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
 
 MoralAgent `i` opinion about MoralIssue `x`
 """
-τ{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T}) = (i.moralvalues ⋅ x.moralvalues) / sqrt(K)
+hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T}) = (i.moralvalues ⋅ x.moralvalues) / sqrt(K)
 
 """
 `Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T})`
@@ -13,7 +13,7 @@ MoralAgent `i` opinion about MoralIssue `x`
 Cognitive cost MoralAgent `i` suffers when learning MoralAgent `j` opinion about MoralIssue `x`
 """
 function Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T})
-    return -γ^2 * log(ϵ + (1 - 2ϵ) * erfc(- τ(j, x) * sign(τ(i, x)) / γ) / sqrt(8))
+    return -γ^2 * log( ϵ + (1 - 2ϵ) * 0.5 * erfc(-  sign(hopinion(j, x)) * hopinion(i, x) / γ /sqrt(2)) )
 end
 
 function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})

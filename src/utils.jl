@@ -39,7 +39,7 @@ agents(soc::Society, i::Int64) = soc.agents[i]
 """
 `insertagent!{N,K,T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64)`
 
-Insert new agent `proposed` at position `i` on SOciety `soc`
+Insert new agent `proposed` at position `i` on Society `soc`
 """
 insertagent!{N, K, T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64) =
     soc.agents[i] = proposed

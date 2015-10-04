@@ -1,13 +1,10 @@
-@everywhere begin
-    include("src/SocialSystems.jl")
-    using SocialSystems
+using SocialSystems
 
-    hi = zeros(20000)
-    x = MoralIssue()
-    soc = Society(200)
-end
+hi = zeros(20000)
+x = MoralIssue()
+soc = Society(200)
 
-@parallel for i in 1:20000
+for i in 1:20000
     metropolisstep(soc, x)
     hi[i] = hamiltonian(soc, x)
 end
