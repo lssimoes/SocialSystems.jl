@@ -12,11 +12,11 @@ hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T}) = (i.moralvalues ⋅ x.mor
 
 Cognitive cost MoralAgent `i` suffers when learning MoralAgent `j` opinion about MoralIssue `x`
 """
-function Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T})
+function Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T}, γ::Float64, ϵ::Float64)
     return -γ^2 * log( ϵ + (1 - 2ϵ) * 0.5 * erfc(-  sign(hopinion(j, x)) * hopinion(i, x) / γ /sqrt(2)) )
 end
 
-function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})
+function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}; β = βDEF)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
@@ -24,7 +24,7 @@ function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})
 
     # Sample a a new MoralAgent using a MultivariateGaussian centered at the old Agent
     proposed = MoralAgent(rand(MvNormal(agents(soc,i).moralvalues, ones(5))))
-    newcost  = cognitivecost(proposed, soc, j, x)
+    newcost  = cognitivecost(soc.cognitivecost, proposed, agents(soc, j), x, soc.γ, soc.ϵ)
 
     ΔV = newcost - oldcost
     # transistion probability

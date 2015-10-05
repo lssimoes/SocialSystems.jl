@@ -59,16 +59,20 @@ Type representing a Society
 * `cognitivecost` (`Function`): Function that describes the cognite cost of the agent
 * `interactionmatrix` (`Matrix{T}`): N×N-matrix that describes the interactions of the agents of the society
 * `agents` (`Vector{MoralAgent}`): N-vector of the `MoralAgent{K, T}`s of the Society
+* `γ` (`Float64`): Cognitive Style of the agents
+* `ϵ` (`Float64`): Distrust of the agents
 """
 type Society{N, K, T <: Real}
     cognitivecost::Function
     interactionmatrix::Matrix{Float64}
     agents::Vector{MoralAgent{K}}
+    γ::Float64
+    ϵ::Float64
 
     function call{K, T}(::Type{Society}, cognitivecost::Function,
                  interactionmatrix::Matrix{Float64},
-                 agents::Vector{MoralAgent{K, T}})
-        new{length(agents), K, T}(cognitivecost, interactionmatrix, agents)
+                 agents::Vector{MoralAgent{K, T}}, γ::Float64, ϵ::Float64)
+        new{length(agents), K, T}(cognitivecost, interactionmatrix, agents, γ, ϵ)
     end
 end
 
@@ -127,7 +131,7 @@ Construct a random Society with default size (`NSOC`) and default cognitive cost
 The agents have the default number of components (`KMORAL`)
 """
 function Society()
-    return Society(Vij, 1 - eye(NSOC), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:NSOC])
+    return Society(Vij, 1 - eye(NSOC), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:NSOC], γDEF, ϵDEF)
 end
 
 """
@@ -137,7 +141,7 @@ Construct a random Society with size `n` and default cognitive cost (`Vij`)
 The agents have the default number of components (`KMORAL`)
 """
 function Society(n::Integer)
-    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n])
+    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n], γDEF, ϵDEF)
 end
 
 """
@@ -150,7 +154,7 @@ function Society(Jij::Matrix{Float64})
     n1, n2 = size(Jij)
     if n1 != n2 error("Given interaction matrix isn't square!") end
 
-    return Society(Vij, Jij, MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n1])
+    return Society(Vij, Jij, MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n1], γDEF, ϵDEF)
 end
 
 ##############################
@@ -219,5 +223,6 @@ next(soc::Society, s) = (soc[s], s+1)
 function show(io::IO, soc::Society)
     N, K = size(soc)
     println(io, N, "-sized Society on a ", K, "-dimensional Moral space")
-    print(io, "Cognition Cost: ", soc.cognitivecost)
+    println(io, "Cognitive Cost: ", soc.cognitivecost)
+    @printf io "γ: %.4f\t ϵ: %.4f" soc.γ soc.ϵ
 end
