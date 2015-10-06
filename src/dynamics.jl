@@ -1,4 +1,4 @@
-export hopinion, Vij, metropolisstep
+export hopinion, Vij, metropolisstep, metropolis
 
 """
 `hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
@@ -40,11 +40,17 @@ end
 
 function metropolis{N,K,T}(soc::Society{N,K,T})
     # fix this later
-    iter = 20000
-    variations = MoralAgent[]
+    iter = 100*length(soc)
+
+    changes = MoralAgent{K, T}[MoralAgent(zeros(K)) for i in 1:iter]
+    hi      = zeros(iter)
+
     x = MoralIssue()
 
     for i in 1:iter
-        push!(variations, metropolisstep(soc, x))
+        changes[i] = metropolisstep(soc, x)
+        hi[i]      = hamiltonian(soc, x)
     end
+
+    return iter, hi, changes
 end

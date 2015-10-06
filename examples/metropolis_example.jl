@@ -1,14 +1,13 @@
-using SocialSystems
+include("src/SocialSystems.jl")
 
-hi = zeros(2000)
-x = MoralIssue()
-soc = Society(20)
+using SocialSystems, PyPlot
 
-for i in 1:2000
-    metropolisstep(soc, x)
-    hi[i] = hamiltonian(soc, x)
-end
+n=50
+γ=1.8
+ϵ=0.2
 
-using PyPlot
-plot(collect(1:2000), hi)
-savefig("metroplot.png")
+soc = Society(n=n, γ=γ, ϵ=ϵ)
+iter, hi, variations = metropolis(soc)
+
+plot(collect(1:iter), hi)
+savefig("metroplot_n$(n)_gamma$(γ)_eps$(ϵ).png")

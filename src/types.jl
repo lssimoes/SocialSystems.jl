@@ -81,21 +81,12 @@ end
 ##############################
 
 """
-`MoralAgent()`
+`MoralAgent(;k=KMORAL)`
 
-Construct a MoralAgent with a unitary random moral vector with default number of components (`KMORAL`).
+Construct a MoralAgent with a random moral vector with default number of components `KMORAL`.
 """
-function MoralAgent()
-    return MoralAgent(2rand(KMORAL)-1)
-end
-
-"""
-`MoralAgent(n::Integer)`
-
-Construct a MoralAgent with a unitary random moral vector with `n` components.
-"""
-function MoralAgent(n::Integer)
-    return MoralAgent(2rand(n)-1)
+function MoralAgent(;k=KMORAL)
+    return MoralAgent(2rand(k)-1)
 end
 
 ##############################
@@ -103,21 +94,12 @@ end
 ##############################
 
 """
-`MoralIssue()`
+`MoralIssue(;k=KMORAL)`
 
-Construct a MoralIssue with a unitary random moral vector with default number of components (`KMORAL`).
+Construct a MoralIssue with a random moral vector with default number of components `KMORAL`.
 """
-function MoralIssue()
-    return MoralIssue(2rand(KMORAL)-1)
-end
-
-"""
-`MoralIssue(n::Integer)`
-
-Construct a MoralIssue with a unitary random moral vector with `n` components.
-"""
-function MoralIssue(n::Integer)
-    return MoralIssue(2rand(n)-1)
+function MoralIssue(;k=KMORAL)
+    return MoralIssue(2rand(k)-1)
 end
 
 ##############################
@@ -125,23 +107,13 @@ end
 ##############################
 
 """
-`Society()`
+`Society(;n=NSOC, γ=γDEF, ϵ=ϵDEF)`
 
-Construct a random Society with default size (`NSOC`) and default cognitive cost (`Vij`).
+Construct a random Society with default size `NSOC`, cognitive cost (`Vij`) and parameters `(γDEF, ϵDEF)`.
 The agents have the default number of components (`KMORAL`)
 """
-function Society()
-    return Society(Vij, 1 - eye(NSOC), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:NSOC], γDEF, ϵDEF)
-end
-
-"""
-`Society(n::Integer)`
-
-Construct a random Society with size `n` and default cognitive cost (`Vij`)
-The agents have the default number of components (`KMORAL`)
-"""
-function Society(n::Integer)
-    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n], γDEF, ϵDEF)
+function Society(;n=NSOC, γ=γDEF, ϵ=ϵDEF)
+    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(k=KMORAL) for i in 1:n], γ, ϵ)
 end
 
 """
@@ -150,11 +122,11 @@ end
 Construct a random Society with a square `Jij` interaction matrix and default cognitive cost (`Vij`)
 The agents have the default number of components (`KMORAL`)
 """
-function Society(Jij::Matrix{Float64})
+function Society(Jij::Matrix{Float64}; γ=γDEF, ϵ=ϵDEF)
     n1, n2 = size(Jij)
     if n1 != n2 error("Given interaction matrix isn't square!") end
 
-    return Society(Vij, Jij, MoralAgent{KMORAL, Float64}[MoralAgent(KMORAL) for i in 1:n1], γDEF, ϵDEF)
+    return Society(Vij, Jij, MoralAgent{KMORAL, Float64}[MoralAgent(k=KMORAL) for i in 1:n1], γ, ϵ)
 end
 
 ##############################
