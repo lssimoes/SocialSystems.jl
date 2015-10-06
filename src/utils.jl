@@ -1,16 +1,16 @@
-export NSOC, KMORAL
+export NSOC, KMORAL, βDEF, γDEF, ϵDEF
 export interactions, agents, insertagent!
 
 ##############################
 #          Constants         #
 ##############################
 
+NSOC = 1000  # default size of the Society
+KMORAL = 5   # default size of the Moral Space
+
 βDEF = 10.0     # social pressure
 γDEF = sqrt(3)  # γ^2 = (1 - ρ^2)/ρ^2 # cognitive style
 ϵDEF = 0.1      # distrust of the agents
-
-NSOC = 1000  # default size of the Society
-KMORAL = 5   # default size of the Moral Space
 
 ##############################
 #     Utilitary Functions    #

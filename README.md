@@ -2,6 +2,15 @@
 
 Simple modelling of some types of social systems using Statistical Mechanis and MCMC Simulations.
 
-At first it includes some interaction dynamics between moral agents on a 5-fold dimensional space.
+'''julia
+using SocialSystems, PyPlot
 
+n=50
+γ=1.8
+ϵ=0.2
 
+soc = Society(n=n, γ=γ, ϵ=ϵ)
+iter, hi, variations = metropolis(soc)
+
+plot(collect(1:iter), hi)
+'''
