@@ -20,7 +20,7 @@ function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}; β = βD
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
-    oldcost     = cognitivecost(soc, i, j, x)
+    oldcost  = cognitivecost(soc, i, j, x)
 
     # Sample a a new MoralAgent using a MultivariateGaussian centered at the old Agent
     proposed = MoralAgent(rand(MvNormal(agents(soc,i).moralvalues, ones(5))))
@@ -40,17 +40,20 @@ end
 
 function metropolis{N,K,T}(soc::Society{N,K,T})
     # fix this later
-    iter = 100*length(soc)
+    iter    = 100*length(soc)
 
-    changes = MoralAgent{K, T}[MoralAgent(zeros(K)) for i in 1:iter]
+    changes = Society{N, K, T}[]
     hi      = zeros(iter)
 
     x = MoralIssue()
 
     for i in 1:iter
-        changes[i] = metropolisstep(soc, x)
+        # ignoring the MoralAgent 'metropolisstep()' outputs
+        metropolisstep(soc, x);
+        push!(changes, soc)
+        
         hi[i]      = hamiltonian(soc, x)
     end
 
-    return iter, hi, changes
+    return iter, changes, hi
 end
