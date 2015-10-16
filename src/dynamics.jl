@@ -1,4 +1,4 @@
-export hopinion, Vij, metropolisstep, metropolis
+export hopinion, Vij, metropolisstep!, metropolis!
 
 """
 `hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
@@ -16,7 +16,7 @@ function Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T}, γ
     return -γ^2 * log( ϵ + (1 - 2ϵ) * 0.5 * erfc(-  sign(hopinion(j, x)) * hopinion(i, x) / γ /sqrt(2)) )
 end
 
-function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}; β = βDEF)
+function metropolisstep!{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}; β = βDEF)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
@@ -38,22 +38,17 @@ function metropolisstep{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}; β = βD
     return agents(soc, i)
 end
 
-function metropolis{N,K,T}(soc::Society{N,K,T})
+function metropolis!{N,K,T}(soc::Society{N,K,T})
     # fix this later
-    iter    = 100*length(soc)
+    iter  = 100*length(soc)
 
-    changes = Society{N, K, T}[]
-    hi      = zeros(iter)
-
+    # The society discusses a single issue, some kind of Zeitgeist
     x = MoralIssue()
 
     for i in 1:iter
         # ignoring the MoralAgent 'metropolisstep()' outputs
-        metropolisstep(soc, x);
-        push!(changes, soc)
-        
-        hi[i]      = hamiltonian(soc, x)
+        metropolisstep!(soc, x);
     end
 
-    return iter, changes, hi
+    return iter, x
 end
