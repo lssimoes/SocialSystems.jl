@@ -65,7 +65,7 @@ Type representing a Society
 type Society{N, K, T <: Real}
     cognitivecost::Function
     interactionmatrix::Matrix{Float64}
-    agents::Vector{MoralAgent{K}}
+    agents::Vector{MoralAgent{K, T}}
     ρ::Float64
     ϵ::Float64
 
