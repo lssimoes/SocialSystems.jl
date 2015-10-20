@@ -1,22 +1,27 @@
 using SocialSystems, JLD, PyPlot
 
-N = 120
+N = 100
 
-for γi in 0:0.1:1.5 for ϵi in 0:0.1:1
-    soc  = Society(n=N, γ=γi, ϵ=ϵi)
+for ρi in 0:0.05:0.95 for ϵi in 0:0.05:0.5 for βi in 0.5:0.5:20
+    soc  = Society(n=N, ρ=ρi, ϵ=ϵi)
     iter, x = metropolis!(soc)
+
+    dir  = "data/metropolis_sweep"
+    file = "metroplot_n$(N)_gamma$(ρi)_eps$(ϵi)_beta$(βi)"
 
     # ERROR: AssertionError: generic functions not supported
     # so I need to split the Society type on its' many fields
-    @save "metropolis_sweep/metroplot_n$(N)_gamma$(γi)_eps$(ϵi).jld" iter soc.agents soc.interactionmatrix soc.γ soc.ϵ x
+    @save "$dir/$file.jld" iter soc.agents soc.interactionmatrix soc.ρ soc.ϵ x
 
-    hi = zeros(200)
+    mi = zeros(200)
     for i in 1:200
         metropolisstep!(soc, x);
-        hi[i] = hamiltonian(soc, x)
+        mi[i] = magnetization(soc, x)
     end
 
-    hj = hi - mean(hi)
-    plot(collect(1:200), hj/(maximum(hj) - minimum(hj)))
+    plot(collect(1:200), mi)
+    ylim(-1., 1.)
 
-end end
+    savefig("$dir/$file.png")
+
+end end end

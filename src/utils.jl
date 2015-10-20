@@ -1,4 +1,4 @@
-export NSOC, KMORAL, βDEF, γDEF, ϵDEF
+export NSOC, KMORAL, βDEF, ρDEF, ϵDEF
 export interactions, agents, insertagent!
 
 ##############################
@@ -8,13 +8,15 @@ export interactions, agents, insertagent!
 NSOC = 1000  # default size of the Society
 KMORAL = 5   # default size of the Moral Space
 
-βDEF = 10.0     # social pressure
-γDEF = sqrt(3)  # γ^2 = (1 - ρ^2)/ρ^2 # cognitive style
+βDEF = 15.0     # social pressure
+ρDEF = 0.3      # γ^2 = (1 - ρ^2)/ρ^2 # cognitive style
 ϵDEF = 0.1      # distrust of the agents
 
 ##############################
 #     Utilitary Functions    #
 ##############################
+
+gammasoc(ρ::Float64) = (1 - ρ^2)/ρ^2
 
 """
 `interactions(soc::Society)`
