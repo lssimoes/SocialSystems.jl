@@ -23,6 +23,8 @@ for ρi in 0:0.05:0.95 for ϵi in 0:0.05:0.5 for βi in 0.5:0.5:20
     plot(collect(1:200), round(mi,3))
     ylim(-1., 1.)
 
+    println("Saving figure $file.png")
+
     savefig("$dir/$file.png")
     clf()
 
