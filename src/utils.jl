@@ -16,7 +16,7 @@ KMORAL = 5   # default size of the Moral Space
 #     Utilitary Functions    #
 ##############################
 
-gammasoc(ρ::Float64) = (1 - ρ^2)/ρ^2
+gammasoc(ρ::Float64) = sqrt(1 - ρ^2) / ρ
 
 """
 `interactions(soc::Society)`
