@@ -41,7 +41,7 @@ end
 
 function metropolis!{N,K,T}(soc::Society{N,K,T}; β = βDEF)
     # fix this later
-    iter  = 100*length(soc)
+    iter  = 150*length(soc)
 
     # The society discusses a single issue, some kind of Zeitgeist
     x = MoralIssue()
