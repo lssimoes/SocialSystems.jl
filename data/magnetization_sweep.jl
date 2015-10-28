@@ -20,3 +20,7 @@ ylabel(L"\beta")
 colorbar()
 
 savefig("data/magnetization_1000_100_10_rhobeta.png")
+
+# real	581m19.518s
+# user	581m1.290s
+# sys	0m28.770s
