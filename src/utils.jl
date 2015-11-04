@@ -5,12 +5,19 @@ export interactions, agents, insertagent!
 #          Constants         #
 ##############################
 
-NSOC = 1000  # default size of the Society
-KMORAL = 5   # default size of the Moral Space
+"Default size of the Society"
+const NSOC = 1000
+"Default size of the Moral Space"
+const KMORAL = 5
 
-βDEF = 15.0     # social pressure
-ρDEF = 0.3      # γ^2 = (1 - ρ^2)/ρ^2 # cognitive style
-ϵDEF = 0.1      # distrust of the agents
+"Default social pressure"
+const βDEF = 15.0
+
+"Default cognitive style"
+const ρDEF = 0.3      # γ^2 = (1 - ρ^2)/ρ^2
+
+"Default distrust of the agents"
+const ϵDEF = 0.1
 
 ##############################
 #     Utilitary Functions    #
