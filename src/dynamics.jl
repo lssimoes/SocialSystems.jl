@@ -1,11 +1,4 @@
-export hopinion, Vij, metropolisstep!, metropolis!
-
-"""
-`hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
-
-MoralAgent `i` opinion about MoralIssue `x`
-"""
-hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T}) = (i.moralvalues ⋅ x.moralvalues) / sqrt(K)
+export Vij, metropolisstep!, metropolis!
 
 """
 `Vij{K,T}(i::MoralAgent{K,T}, j::MoralAgent{K,T}, x::MoralIssue{K,T})`
