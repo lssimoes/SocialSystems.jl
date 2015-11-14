@@ -1,4 +1,5 @@
-export hopinion, cognitivecost, hamiltonian, magnetization, consensus
+export hopinion, cognitivecost, hamiltonian,
+       magnetization, believeness, quadrupole, consensus
 
 """
 `hopinion{K,T}(i::MoralAgent{K,T}, x::MoralIssue{K,T})`
@@ -54,16 +55,60 @@ function magnetization{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})
 end
 
 """
-`consensus{N,K,T}(soc::Society{N,K,T})`
+`believeness{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})`
 
-Evaluates the `consensus` of a Society, that is, the sum of the inner products of the MoralAgents
+Evaluates the `believeness` of a Society, that is, the sum of the absolute values of MoralAgents opinions
 """
-function consensus{N,K,T}(soc::Society{N,K,T})
-    ψ = 0.
+function believeness{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})
+    bel = 0.
+
+    for agi in agents(soc)
+        bel += abs(hopinion(agi, x))
+    end
+
+    return bel / N / sqrt(K)
+end
+
+"""
+`quadrupole{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})`
+
+Evaluates the `quadrupole` of a Society, that is, something very nasty and obscure:
+
+* \frac{1}{N^2 K} \sum_{\langle ij \rangle} R_{ij} j_i h_j
+"""
+function quadrupole{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T})
+    qd = 0.
 
     for i in 1:N for j in (i+1):N
-        ψ += agents(soc, i).moralvalues ⋅ agents(soc,j).moralvalues
+        qd += hopinion(agents(soc, i), x) * hopinion(agents(soc, j), x) * soc[i, j]
     end end
 
-    return ψ / N / sqrt(K)
+    return qd / N^2 / K
+end
+
+"""
+`consensus{N,K,T}(soc::Society{N,K,T}, i::Int, j::Int)`
+
+Evaluates the `consensus` of MoralAgents `i` and `j` within a Society, that is, the between the agents inner representations
+"""
+function consensus{N,K,T}(soc::Society{N,K,T}, i::Int, j::Int)
+    if 0 < i <= N && 0 < j <= N
+        return agents(soc, i).moralvalues ⋅ agents(soc,j).moralvalues / K
+    else
+        error("The indices given are out of range")
+    end
+end
+"""
+`consensus{N,K,T}(soc::Society{N,K,T})`
+
+Evaluates the `consensus` of a Society, that is, the matrix of the correlations between the MoralAgents inner representations
+"""
+function consensus{N,K,T}(soc::Society{N,K,T})
+    ψ = zeros(N, N)
+
+    for i in 1:N for j in i:N
+        ψ[i, j] = consensus(soc, i, j)
+    end end
+
+    return ψ
 end
