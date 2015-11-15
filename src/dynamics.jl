@@ -22,7 +22,7 @@ function metropolisstep!{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}, β::Flo
 
     ΔV = newcost - oldcost
     # transistion probability
-    p_trans  =  (ΔV < 0 ? 1 : exp(-β*soc[i, j]*ΔV) )
+    p_trans  =  (ΔV < 0 ? 1 : exp(-β*soc[i, j]*ΔV / K) )
 
     if rand() < p_trans
         insertagent!(soc, proposed, i)
