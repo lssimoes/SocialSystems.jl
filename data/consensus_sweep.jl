@@ -1,4 +1,4 @@
-using SocialSystems, JLD, PyPlot
+using SocialSystems, PyPlot
 
 ## Setting the variables
 ###########################
@@ -17,7 +17,11 @@ for βi in βrng for ρi in ρrng for ϵi in ϵrng
     iter, x = metropolis!(soc, β=βi)
 
     ψ = consensus(soc)
-
+    
+    for i in 1:N
+        ψ[i, i] = 0.
+    end
+    
     vechist = reshape(ψ, N*N, 1)
     vechist = vechist[collect(vechist .!= 0.)]
     rnghist, ptshist = hist(vechist, 0:0.01:1)
@@ -30,4 +34,6 @@ for βi in βrng for ρi in ρrng for ϵi in ϵrng
     savefig( "data/consensus_sweep/consensus_$(βi)_$(ρi)_$(ϵi).png")
 
     println("Evaluated point β=$βi, ρ=$ρi, ϵ=$ϵi")
+    
+    clf()
 end end end

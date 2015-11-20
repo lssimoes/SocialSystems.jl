@@ -106,7 +106,7 @@ Evaluates the `consensus` of a Society, that is, the matrix of the correlations 
 function consensus{N,K,T}(soc::Society{N,K,T})
     ψ = zeros(N, N)
 
-    for i in 1:N for j in i:N
+    for i in 1:N for j in (i+1):N
         ψ[i, j] = consensus(soc, i, j)
     end end
 
