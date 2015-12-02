@@ -5,7 +5,7 @@ Simple modelling of some types of social systems using Statistical Mechanis and 
 Install the package running:
 
 ```julia
-julia> Pkg.clone(Pkg.clone("https://github.com/kaslusimoes/SocialSystems.jl.git"))
+julia> Pkg.clone("https://github.com/kaslusimoes/SocialSystems.jl.git")
 ```
 
 ## A simple example
