@@ -56,23 +56,20 @@ end
 Type representing a Society
 
 ### Fields
-* `cognitivecost` (`Function`): Function that describes the cognite cost of the agent
 * `interactionmatrix` (`Matrix{T}`): N×N-matrix that describes the interactions of the agents of the society
 * `agents` (`Vector{MoralAgent}`): N-vector of the `MoralAgent{K, T}`s of the Society
 * `ρ` (`Float64`): Cognitive Style of the agents
 * `ϵ` (`Float64`): Distrust of the agents
 """
 type Society{N, K, T <: Real}
-    cognitivecost::Function
     interactionmatrix::Matrix{Float64}
     agents::Vector{MoralAgent{K, T}}
     ρ::Float64
     ϵ::Float64
 
-    function call{K, T}(::Type{Society}, cognitivecost::Function,
-                 interactionmatrix::Matrix{Float64},
+    function call{K, T}(::Type{Society}, interactionmatrix::Matrix{Float64},
                  agents::Vector{MoralAgent{K, T}}, ρ::Float64, ϵ::Float64)
-        new{length(agents), K, T}(cognitivecost, interactionmatrix, agents, ρ, ϵ)
+        new{length(agents), K, T}(interactionmatrix, agents, ρ, ϵ)
     end
 end
 
@@ -113,7 +110,7 @@ Construct a random Society with default size `NSOC`, cognitive cost (`Vij`) and 
 The agents have the default number of components (`KMORAL`)
 """
 function Society(;n=NSOC, ρ=ρDEF, ϵ=ϵDEF)
-    return Society(Vij, 1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(k=KMORAL) for i in 1:n], ρ, ϵ)
+    return Society(1 - eye(n), MoralAgent{KMORAL, Float64}[MoralAgent(k=KMORAL) for i in 1:n], ρ, ϵ)
 end
 
 """
@@ -126,7 +123,7 @@ function Society(Jij::Matrix{Float64}; ρ=ρDEF, ϵ=ϵDEF)
     n1, n2 = size(Jij)
     if n1 != n2 error("Given interaction matrix isn't square!") end
 
-    return Society(Vij, Jij, MoralAgent{KMORAL, Float64}[MoralAgent(k=KMORAL) for i in 1:n1], ρ, ϵ)
+    return Society(Jij, MoralAgent{KMORAL, Float64}[MoralAgent(k=KMORAL) for i in 1:n1], ρ, ϵ)
 end
 
 ##############################
@@ -195,6 +192,5 @@ next(soc::Society, s) = (soc[s], s+1)
 function show(io::IO, soc::Society)
     N, K = size(soc)
     println(io, N, "-sized Society on a ", K, "-dimensional Moral space")
-    println(io, "Cognitive Cost: ", soc.cognitivecost)
     @printf io "ρ: %.4f\t ϵ: %.4f" soc.ρ soc.ϵ
 end

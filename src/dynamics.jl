@@ -16,17 +16,17 @@ function metropolisstep!{N,K,T}(soc::Society{N,K,T}, x::MoralIssue{K,T}, β::Flo
 
     oldcost  = cognitivecost(soc, i, j, x)
 
-    # Sample a a new MoralAgent using a MultivariateGaussian centered at the old Agent
-    proposed = MoralAgent(rand(MvNormal(agents(soc,i).moralvalues, ones(5))))
-    newcost  = cognitivecost(soc.cognitivecost, proposed, agents(soc, j), x, soc.ρ, soc.ϵ)
+    # Sample a 'proposed' MoralAgent using a MultivariateGaussian centered at the old Agent
+    propag = MoralAgent(rand(MvNormal(agents(soc,i).moralvalues, ones(5))))
+    newcost  = cognitivecost(propag, agents(soc, j), x, soc.ρ, soc.ϵ)
 
     ΔV = newcost - oldcost
     # transistion probability
     p_trans  =  (ΔV < 0 ? 1 : exp(-β*soc[i, j]*ΔV / K) )
 
     if rand() < p_trans
-        insertagent!(soc, proposed, i)
-        return proposed
+        insertagent!(soc, propag, i)
+        return propag
     end
 
     return agents(soc, i)
