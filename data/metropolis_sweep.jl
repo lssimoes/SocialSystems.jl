@@ -9,10 +9,7 @@ for ρi in 0:0.05:0.95 for ϵi in 0:0.05:0.5 for βi in 0.5:0.5:20
     dir  = "data/metropolis_sweep"
     file = "metroplot_n$(N)_rho$(ρi)_eps$(ϵi)_beta$(βi)"
 
-    # ERROR: AssertionError: generic functions not supported
-    # so I need to split the Society type on its' many fields
-    save("$dir/$file.jld", "socagents", soc.agents, "socinteractions",
-         soc.interactionmatrix, "socρ", soc.ρ, "socϵ", soc.ϵ, "socissue", x) # compress=true?
+    save("$dir/$file.jld", "soc_$(ρi)_$(ϵi)_$(βi)", soc) # compress=true?
 
     mi = zeros(200)
     for i in 1:200
