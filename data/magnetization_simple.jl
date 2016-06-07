@@ -3,10 +3,10 @@ using SocialSystems, JLD, PyPlot
 ## Setting the variables
 ###########################
 N     = 100
-βsize = 100
-βrng  = linspace(1/βsize, 1, βsize)
-ρsize = 100
-ρrng  = linspace(0.2/ρsize, 0.2, ρsize)
+βsize = 500
+βrng  = linspace(10/βsize, 10, βsize)
+ρsize = 500
+ρrng  = linspace(1/ρsize, 1, ρsize)
 ϵ 	  = 0.05
 
 mag   = zeros(βsize, ρsize)
