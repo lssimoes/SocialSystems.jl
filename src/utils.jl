@@ -1,55 +1,39 @@
-export NSOC, KMORAL, βDEF, ρDEF, ϵDEF
 export interactions, agents, insertagent!
 
-##############################
-#          Constants         #
-##############################
+function randSphere():
+    return None
 
-"Default size of the Society"
-const NSOC = 1000
-"Default size of the Moral Space"
-const KMORAL = 5
+# ##############################
+# #     Utilitary Functions    #
+# ##############################
 
-"Default social pressure"
-const βDEF = 15.0
+# gammasoc(ρ::Float64) = sqrt(1 - ρ^2) / ρ
 
-"Default cognitive style"
-const ρDEF = 0.3      # γ^2 = (1 - ρ^2)/ρ^2
+# """
+# `interactions(soc::Society)`
 
-"Default distrust of the agents"
-const ϵDEF = 0.1
+# Returns the `interactionmatrix` of a Society `soc`
+# """
+# interactions(soc::Society)     = soc.interactionmatrix
 
-##############################
-#     Utilitary Functions    #
-##############################
+# """
+# `agents(soc::Society)`
 
-gammasoc(ρ::Float64) = sqrt(1 - ρ^2) / ρ
+# Returns the `agents` vector of a Society `soc`
+# """
+# agents(soc::Society)           = soc.agents
 
-"""
-`interactions(soc::Society)`
+# """
+# `agents(soc::Society, i::Int64)`
 
-Returns the `interactionmatrix` of a Society `soc`
-"""
-interactions(soc::Society)     = soc.interactionmatrix
+# Returns the `i`th `agent` of a Society `soc`
+# """
+# agents(soc::Society, i::Int64) = soc.agents[i]
 
-"""
-`agents(soc::Society)`
+# """
+# `insertagent!{N,K,T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64)`
 
-Returns the `agents` vector of a Society `soc`
-"""
-agents(soc::Society)           = soc.agents
-
-"""
-`agents(soc::Society, i::Int64)`
-
-Returns the `i`th `agent` of a Society `soc`
-"""
-agents(soc::Society, i::Int64) = soc.agents[i]
-
-"""
-`insertagent!{N,K,T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64)`
-
-Insert new agent `proposed` at position `i` on Society `soc`
-"""
-insertagent!{N, K, T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64) =
-    soc.agents[i] = proposed
+# Insert new agent `proposed` at position `i` on Society `soc`
+# """
+# insertagent!{N, K, T}(soc::Society{N,K,T}, proposed::MoralAgent{K,T}, i::Int64) =
+#     soc.agents[i] = proposed
