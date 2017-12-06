@@ -2,17 +2,6 @@
 #  DistrustAgentSociety Type   #
 ##############################
 
-# """
-# `type DistrustAgentSociety{N, K, T}`
-
-# Type representing a generic Bayesian Agent Society
-
-# ### Fields
-# * `interactionmatrix` (`Matrix{T}`): N×N-matrix that describes the interactions of the agents of the society
-# * `agents` (`Vector{MoralVector}`): N-vector of the `MoralVector{K, T}`s of the DistrustAgentSociety
-# * `ρ` (`Float64`): Cognitive Style of the agents
-# * `ε` (`Float64`): Distrust of the agents
-# """
 # struct DistrustAgentSociety{N, K, T <: Real}
 #     """
 #     ------
@@ -44,36 +33,47 @@
 #     end
 # end
 
-struct DistrustAgentSociety{N, K, T <: Real}
+"""
+    type DistrustAgentSociety{N, K, T}
+
+Type representing a generic Bayesian Agent Society
+
+### Fields
+* interactionmatrix (Matrix{T}): N×N-matrix that describes the interactions of the agents of the society
+* agents (Vector{MoralVector}): N-vector of the MoralVector{K, T}s of the DistrustAgentSociety
+* #
+* #
+"""
+struct DistrustAgentSociety{N, K, T <: Real} <: Society{N, K, T}
     interactions::Matrix{Bool}
     agents::Vector{MoralVector{K, T}}
-    ρ::Float64
-    ε::Float64
+    #
+    #
 end
 
 
 """
-`DistrustAgentSociety()`
+    DistrustAgentSociety()
 
-Construct a random DistrustAgentSociety with default size `NSOC`, cognitive cost (`Vij`) and parameters `(ρDEF, εDEF)`.
-The agents have the default number of components (`KMORAL`)
+Construct a random DistrustAgentSociety with default size NSOC, cognitive cost (Vij) and parameters (ρDEF, εDEF).
+The agents have the default number of components (KMORAL)
 """
 DistrustAgentSociety() = DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], ρDEF, εDEF)
 
 """
-`DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64)`
+    DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64)
 
-Construct a random DistrustAgentSociety with size `n`, cognitive cost (`Vij`) and parameters `(ρ, ε)`.
-The agents have the default number of components (`KMORAL`)
+Construct a random DistrustAgentSociety with size n, cognitive cost (Vij) and parameters (ρ, ε).
+The agents have the default number of components (KMORAL)
 """
 DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64) = DistrustAgentSociety{n, KMORAL, Float64}(Matrix{Bool}(1 - eye(n)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:n], ρ, ε)
 
 
 # """
-# `DistrustAgentSociety(Jij::Matrix{Float64})`
+#   DistrustAgentSociety(Jij::Matrix{Float64})
 
-# Construct a random DistrustAgentSociety with a square `Jij` interaction matrix and default cognitive cost (`Vij`)
-# The agents have the default number of components (`KMORAL`)
+# Construct a random DistrustAgentSociety with a square Jij interaction matrix and default cognitive cost (Vij)
+# The agents have the default number of components (KMORAL)
 # """
 # function DistrustAgentSociety(Jij::Matrix{Float64}; ρ=ρDEF, ε=εDEF)
 #     n1, n2 = size(Jij)
@@ -88,25 +88,8 @@ DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64) = DistrustAgentSociety{n,
 #  DistrustAgentSociety Redefinitions  #
 ######################################
 
-length(soc::DistrustAgentSociety)    = length(soc.agents)
-size(soc::DistrustAgentSociety)      = (length(soc.agents), length(soc.agents[1]))
-
-getindex(soc::DistrustAgentSociety, i::Int64)                    = soc.interactionmatrix[i]
-getindex(soc::DistrustAgentSociety, i::Int64, j::Int64)          = soc.interactionmatrix[i, j]
-getindex(soc::DistrustAgentSociety, i::Int64, r::UnitRange)      = soc.interactionmatrix[i, r]
-getindex(soc::DistrustAgentSociety, r::UnitRange, j::Int64)      = soc.interactionmatrix[r, j]
-getindex(soc::DistrustAgentSociety, r::UnitRange, s::UnitRange)  = soc.interactionmatrix[r, s]
-getindex(soc::DistrustAgentSociety, i::Int64, c::Colon)          = soc.interactionmatrix[i, c]
-getindex(soc::DistrustAgentSociety, c::Colon, j::Int64)          = soc.interactionmatrix[c, j]
-getindex(soc::DistrustAgentSociety, c::Colon, r::UnitRange)      = soc.interactionmatrix[c, r]
-getindex(soc::DistrustAgentSociety, r::UnitRange, c::Colon)      = soc.interactionmatrix[r, c]
-
-start(soc::DistrustAgentSociety)   = 1
-done(soc::DistrustAgentSociety, s) = s > length(soc)
-next(soc::DistrustAgentSociety, s) = (soc[s], s+1)
-
 function show(io::IO, soc::DistrustAgentSociety)
     N, K = size(soc)
     println(io, N, "-sized DistrustAgentSociety on a ", K, "-dimensional Moral space")
-    @printf io "ρ: %.4f\t ε: %.4f" soc.ρ soc.ε
+    #@printf io "ρ: %.4f\t ε: %.4f" soc.ρ soc.ε
 end
