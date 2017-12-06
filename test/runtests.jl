@@ -1,18 +1,18 @@
-using SocialSystems, FactCheck
+using FactCheck
 
-facts("MoralAgent") do
-    context("Create an Agent") do
-        @fact MoralAgent() --> not(nothing)
-        @fact MoralAgent(2) --> not(nothing)
-        @fact MoralAgent([1.,2,3]) --> not(nothing)
+facts("MoralVector") do
+    context("Create an Vector") do
+        @fact MoralVector() --> not(nothing)
+        @fact MoralVector(2) --> not(nothing)
+        @fact MoralVector([1.,2,3]) --> not(nothing)
     end
 end
 
-facts("Society") do
-    context("Create a Society") do
-        @fact Society() --> not(nothing)
-        @fact Society(3) --> not(nothing)
-        @fact Society(rand(3,3)) --> not(nothing)
-        @fact Society(rand(3,2)) --> nothing
+facts("StaticAgentSociety") do
+    context("Create a StaticAgentSociety") do
+        @fact StaticAgentSociety() --> not(nothing)
+        # @fact StaticAgentSociety(3) --> not(nothing)
+        # @fact StaticAgentSociety(rand(3,3)) --> not(nothing)
+        # @fact StaticAgentSociety(rand(3,2)) --> nothing
     end
 end
