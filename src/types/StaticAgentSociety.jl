@@ -89,18 +89,41 @@ end
 ######################################
 
 
+"Computes `ρ` of a Society"
 rhosoc(soc::StaticAgentSociety) = soc.ρ
+
+"Computes `ε` of a Society"
 epssoc(soc::StaticAgentSociety) = soc.ε
+
+"Computes `γ` of a Society"
+function gamsoc(soc::StaticAgentSociety) 
+    ρ = rhosoc(soc)
+
+    return sqrt(1 - ρ^2) / ρ
+end
 
 """
     cogcost{K,T}(soc::StaticAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
 
-Cognitive cost MoralVector `i` suffers when learning MoralVector `j` opinion about MoralVector `x`
+Cognitive cost MoralVector `soc[i]` suffers when learning MoralVector `soc[j]`'s opinion about MoralVector `x`
 """
 function cogcost{N, K,T}(soc::StaticAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
-    gam = gammasoc(rho(soc))
-    ε   = eps(soc)
+    gam = gamsoc(soc)
+    ε   = epssoc(soc)
     agi = soc[i]
+    agj = soc[j]
+
+    return -gam^2 * log( ε + (1 - 2ε) * 0.5 * erfc(-  sign(agj ⋅ x) * (agi ⋅ x) / gam /sqrt(2)) )
+end
+
+"""
+    cogcost{K,T}(soc::StaticAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+
+Cognitive cost MoralVector `agi` suffers when learning MoralVector `soc[i]`'s opinion about MoralVector `x`
+"""
+function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::StaticAgentSociety{N, K, T}, j::Int, x::MoralVector{K,T})
+    gam = gamsoc(soc)
+    ε   = epssoc(soc)
     agj = soc[j]
 
     return -gam^2 * log( ε + (1 - 2ε) * 0.5 * erfc(-  sign(agj ⋅ x) * (agi ⋅ x) / gam /sqrt(2)) )

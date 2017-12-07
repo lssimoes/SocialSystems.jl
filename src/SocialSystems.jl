@@ -1,7 +1,7 @@
 module SocialSystems
 
 using StatsBase: weights, sample
-# using Distributions: MvNormal, Normal, rand, pdf, cdf
+using Distributions: MvNormal, rand
 
 import Base: length, size, getindex, start, done, next, show, dot
 

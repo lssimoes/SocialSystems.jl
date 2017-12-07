@@ -78,7 +78,7 @@ function hamiltonian{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T})
         Rij = soc[i, j]
 
         if Rij != 0 
-            hamil += Rij*cognitivecost(soc,i,j,x) 
+            hamil += Rij*cogcost(soc,i,j,x) 
         end
     end end
 
