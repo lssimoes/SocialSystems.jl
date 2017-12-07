@@ -34,3 +34,17 @@ function metropolis!{N,K,T}(soc::Society{N,K,T}; β = βDEF)
 
     return iter, x
 end
+
+function metropolis!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; β = βDEF)
+    # Maybe change this to a more fundamented convergence test
+    # We could also argue that people have a maximum number of interactions in society
+    iter  = 150*length(soc)
+
+    for i in 1:iter
+        # ignoring the MoralVector 'metropolisstep()' outputs
+        metropolisstep!(soc, x, β);
+    end
+
+    return iter
+end
+

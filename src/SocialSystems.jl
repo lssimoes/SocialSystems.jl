@@ -11,7 +11,7 @@ export randSphere, gammasoc
 # Types Export
 export MoralVector, Society, StaticAgentSociety#, DistrustAgentSociety
 export agents, interactions, insertagent!, hamiltonian, magnetization, believeness, quadrupole, consensus
-export rhosoc, epssoc, cogcost
+export epssoc, rhosoc, gamsoc, cogcost
 
 # Dynamics Export
 export metropolisstep!, metropolis!

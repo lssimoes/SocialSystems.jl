@@ -63,6 +63,7 @@ function show(io::IO, mvector::MoralVector)
     end
 end
 
++(mvector::MoralVector, nvector::MoralVector) = MoralVector(mvector.morals + nvector.morals)
 
 ###############################
 #  Moral Vector Definitions   #

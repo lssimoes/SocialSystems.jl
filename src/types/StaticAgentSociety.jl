@@ -89,11 +89,11 @@ end
 ######################################
 
 
-"Computes `ρ` of a Society"
-rhosoc(soc::StaticAgentSociety) = soc.ρ
-
 "Computes `ε` of a Society"
 epssoc(soc::StaticAgentSociety) = soc.ε
+
+"Computes `ρ` of a Society"
+rhosoc(soc::StaticAgentSociety) = soc.ρ
 
 "Computes `γ` of a Society"
 function gamsoc(soc::StaticAgentSociety) 
