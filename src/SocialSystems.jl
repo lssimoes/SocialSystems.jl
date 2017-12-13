@@ -3,7 +3,7 @@ module SocialSystems
 using StatsBase: weights, sample
 using Distributions: MvNormal, rand
 
-import Base: length, size, getindex, start, done, next, show, dot
+import Base: +, length, size, getindex, start, done, next, show, dot
 
 # Utils Export
 export randSphere, gammasoc
