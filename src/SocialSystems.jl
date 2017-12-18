@@ -1,15 +1,15 @@
 module SocialSystems
 
 using StatsBase: weights, sample
-using Distributions: MvNormal, rand
+using Distributions: MvNormal, rand, Normal, cdf
 
 import Base: +, length, size, getindex, start, done, next, show, dot
 
 # Utils Export
-export randSphere, gammasoc
+export randSphere, gammasoc, phi
 
 # Types Export
-export MoralVector, Society, StaticAgentSociety#, DistrustAgentSociety
+export MoralVector, Society, BasicAgentSociety#, DistrustAgentSociety
 export agents, interactions, insertagent!, hamiltonian, magnetization, believeness, quadrupole, consensus
 export epssoc, rhosoc, gamsoc, cogcost
 
@@ -22,7 +22,7 @@ include("utils.jl")
 
 include("types/MoralVector.jl")
 include("types/Society.jl")
-include("types/StaticAgentSociety.jl")
+include("types/BasicAgentSociety.jl")
 #include("types/DistrustAgentSociety.jl")
 
 include("dynamics.jl")

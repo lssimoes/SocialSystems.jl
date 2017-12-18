@@ -4,19 +4,20 @@ function metropolisstep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Fl
 
     # Sample a 'proposed' MoralVector using a MultivariateGaussian centered at the old Agent
     propag   = MoralVector(rand(MvNormal(soc[i][:], ones(5))))
-    newcost  = cogcost(propag, soc, j, x)
+    newcost  = cogcost(propag, soc, i, j, x)
 
     ΔV = newcost - cogcost(soc, i, j, x)
 
     # transistion probability
     p_trans  =  (ΔV < 0 ? 1 : exp(-β*soc[i, j]*ΔV ) )
 
+    # if (p = rand()) < p_trans
     if rand() < p_trans
         insertagent!(soc, propag, i)
         return propag
     end
 
-    return soc[i]
+    return i, p_trans
 end
 
 function metropolis!{N,K,T}(soc::Society{N,K,T}; β = βDEF)
