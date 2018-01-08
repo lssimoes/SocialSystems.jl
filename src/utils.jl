@@ -13,3 +13,6 @@ rhosoc(γ::Float64)   = 1/ sqrt(1 + γ^2)
 
 "The cumulative function of the Normal distribution"
 phi(x::Real) = cdf(Normal(), x)
+
+"The density function of the Normal distribution"
+G(x::Real) = pdf(Normal(), x)

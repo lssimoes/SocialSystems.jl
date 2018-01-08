@@ -57,9 +57,9 @@ dot{K,T}(i::MoralVector{K,T}, j::MoralVector{K,T}) = (i.morals ⋅ j.morals)
 
 function show(io::IO, mvector::MoralVector)
     N = length(mvector)
-    println(io, N, "-dimensional Moral Vector:")
+    print(io, N, "-dimensional Moral Vector:")
     for i in mvector
-        @printf io " %.5f\n" i
+        @printf io "\n %.5f" i
     end
 end
 

@@ -41,7 +41,7 @@ Construct a random DistrustAgentSociety with default size NSOC, cognitive cost (
 The agents have the default number of components (KMORAL)
 """
 DistrustAgentSociety() = DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), 
-                            MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], [λDEF*eye(KMORAL) for i in 1:NSOC], zeros(N, N), s2DEF*ones(N, N))
+                            MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], [λDEF*eye(KMORAL) for i in 1:NSOC], zeros(NSOC, NSOC), s2DEF*ones(NSOC, NSOC))
 
 
 ########################################
@@ -61,13 +61,13 @@ end
 
 
 "Computes `ε` agent `i` in a Society has about agent `j`"
-epssoc(soc::DistrustAgentSociety, i::Int, j::Int) = phi(soc.ε[i, j] / sqrt(1 + soc.s2[i, j]))
+epssoc(soc::DistrustAgentSociety, i::Int, j::Int) = phi(soc.mu[i, j] / sqrt(1 + soc.s2[i, j]))
 
 "Computes `γ` of agent `i` in a Society given MoralVector `x`"
-gamsoc{K}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = x' * soc.C[i] * x / K
+gamsoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = x[:]' * soc.C[i] * x[:] / K
 
 "Computes `ρ` of agent `i` in a Society given MoralVector `x`"
-rhosoc{K}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gamsoc(soc, i, x))
+rhosoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gamsoc(soc, i, x))
 
 
 """
@@ -81,7 +81,7 @@ function cogcost{N, K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::
     agi = soc[i]
     agj = soc[j]
 
-    return - log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
+    return - log( ε + (1 - 2ε) * phi(sign(agj ⋅ x) * (agi ⋅ x) / gam) )
 end
 
 # """
@@ -94,5 +94,5 @@ end
 #     ε   = epssoc(soc, i, j)
 #     agj = soc[j]
 
-#     return log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
+#     return - log( ε + (1 - 2ε) * phi(sign(agj ⋅ x) * (agi ⋅ x) / gam) )
 # end
