@@ -25,6 +25,9 @@ getindex(soc::Society, c::Colon, j::Int)           = soc.links[c, j]
 getindex(soc::Society, c::Colon, r::UnitRange)     = soc.links[c, r]
 getindex(soc::Society, r::UnitRange, c::Colon)     = soc.links[r, c]
 
+setindex!(soc::Society, x::MoralVector, i::Int64) = 
+    soc.agents[i] = x
+
 start(soc::Society)        = 1
 done(soc::Society, s::Int) = s > length(soc)
 next(soc::Society, s::Int) = (soc[s], s+1)

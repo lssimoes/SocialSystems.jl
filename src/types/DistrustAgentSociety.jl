@@ -81,18 +81,18 @@ function cogcost{N, K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::
     agi = soc[i]
     agj = soc[j]
 
-    return log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
+    return - log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
 end
 
-"""
-    cogcost{K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+# """
+#     cogcost{K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
 
-Cognitive cost MoralVector `agi` suffers when learning MoralVector `soc[i]`'s opinion about MoralVector `x`
-"""
-function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
-    gam = gamsoc(soc, i, x)
-    ε   = epssoc(soc, i, j)
-    agj = soc[j]
+# Cognitive cost MoralVector `agi` suffers when learning MoralVector `soc[i]`'s opinion about MoralVector `x`
+# """
+# function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+#     gam = gamsoc(soc, i, x)
+#     ε   = epssoc(soc, i, j)
+#     agj = soc[j]
 
-    return log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
-end
+#     return log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
+# end

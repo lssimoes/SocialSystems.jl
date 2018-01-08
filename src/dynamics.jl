@@ -1,4 +1,4 @@
-function metropolisstep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Float64)
+function metropolisStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Float64)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
@@ -29,8 +29,8 @@ function metropolis!{N,K,T}(soc::Society{N,K,T}; β = βDEF)
     x = MoralVector()
 
     for i in 1:iter
-        # ignoring the MoralVector 'metropolisstep()' outputs
-        metropolisstep!(soc, x, β);
+        # ignoring the MoralVector 'metropolisStep()' outputs
+        metropolisStep!(soc, x, β);
     end
 
     return iter, x
@@ -42,10 +42,9 @@ function metropolis!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; β = βDE
     iter  = 150*length(soc)
 
     for i in 1:iter
-        # ignoring the MoralVector 'metropolisstep()' outputs
-        metropolisstep!(soc, x, β);
+        # ignoring the MoralVector 'metropolisStep()' outputs
+        metropolisStep!(soc, x, β);
     end
 
     return iter
 end
-

@@ -3,7 +3,7 @@ module SocialSystems
 using StatsBase: weights, sample
 using Distributions: MvNormal, rand, Normal, cdf
 
-import Base: +, length, size, getindex, start, done, next, show, dot
+import Base: +, length, size, getindex, setindex!, start, done, next, show, dot
 
 # Utils Export
 export randSphere, gammasoc, phi
@@ -14,7 +14,7 @@ export agents, interactions, insertagent!, hamiltonian, magnetization, believene
 export epssoc, rhosoc, gamsoc, cogcost
 
 # Dynamics Export
-export metropolisstep!, metropolis!
+export metropolisStep!, metropolis!
 
 include("constants.jl")
 

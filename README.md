@@ -25,7 +25,7 @@ julia> iter, x = metropolis!(soc, β=15.)
 julia> nsteps = 100
 julia> mi = zeros(nsteps)
 julia> for i in 1:nsteps
-            metropolisstep!(soc, x, 15.);
+            metropolisStep!(soc, x, 15.);
             mi[i] = magnetization(soc, x)        
        end
        

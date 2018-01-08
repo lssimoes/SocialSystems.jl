@@ -113,7 +113,7 @@ function cogcost{N, K,T}(soc::BasicAgentSociety{N, K, T}, i::Int, j::Int, x::Mor
     agi = soc[i]
     agj = soc[j]
 
-    return log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
+    return - log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
 end
 
 """
@@ -126,5 +126,5 @@ function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::BasicAgentSociety{N, K, T},
     ε   = epssoc(soc)
     agj = soc[j]
 
-    return log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
+    return - log( ε + (1 - 2ε) * phi(-  sign(agj ⋅ x) * (agi ⋅ x) / gam) )
 end
