@@ -40,15 +40,8 @@ end
 Construct a random DistrustAgentSociety with default size NSOC, cognitive cost (Vij) and parameters (ρDEF, εDEF).
 The agents have the default number of components (KMORAL)
 """
-DistrustAgentSociety() = DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], ρDEF, εDEF)
-
-"""
-    DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64)
-
-Construct a random DistrustAgentSociety with size n, cognitive cost (Vij) and parameters (ρ, ε).
-The agents have the default number of components (KMORAL)
-"""
-DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64) = DistrustAgentSociety{n, KMORAL, Float64}(Matrix{Bool}(1 - eye(n)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:n], ρ, ε)
+DistrustAgentSociety() = DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), 
+                            MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], [λDEF*eye(KMORAL) for i in 1:NSOC], zeros(N, N), s2DEF*ones(N, N))
 
 
 ########################################
@@ -57,7 +50,7 @@ DistrustAgentSociety(n::Int, ρ::Float64, ε::Float64) = DistrustAgentSociety{n,
 
 function show(io::IO, soc::DistrustAgentSociety)
     N, K = size(soc)
-    println(io, N, "-sized DistrustAgentSociety on a ", K, "-dimensional Moral space")
+    print(io, N, "-sized DistrustAgentSociety on a ", K, "-dimensional Moral space")
     #@printf io "ρ: %.4f\t ε: %.4f" soc.ρ soc.ε
 end
 

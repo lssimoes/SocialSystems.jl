@@ -14,6 +14,7 @@ size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
 
 getindex(soc::Society, i::Int)                     = soc.agents[i]
 getindex(soc::Society, c::Colon)                   = soc.agents[:]
+getindex(soc::Society, c1::Colon, c2::Colon)       = soc.links[:, :]
 
 getindex(soc::Society, i::Int, j::Int)             = soc.links[i, j]
 getindex(soc::Society, i::Int, r::UnitRange)       = soc.links[i, r]
