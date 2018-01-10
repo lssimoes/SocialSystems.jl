@@ -37,11 +37,33 @@ end
 """
     DistrustAgentSociety()
 
-Construct a random DistrustAgentSociety with default size NSOC, cognitive cost (Vij) and parameters (ρDEF, εDEF).
+Construct a random DistrustAgentSociety with default size NSOC
 The agents have the default number of components (KMORAL)
 """
-DistrustAgentSociety() = DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), 
-                            MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], [λDEF*eye(KMORAL) for i in 1:NSOC], zeros(NSOC, NSOC), s2DEF*ones(NSOC, NSOC))
+DistrustAgentSociety() = 
+    DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], 
+                                                [λDEF*eye(KMORAL) for i in 1:NSOC], zeros(NSOC, NSOC), s2DEF*ones(NSOC, NSOC))
+
+"""
+    DistrustAgentSociety(n::Int)
+
+Construct a random DistrustAgentSociety with size n
+The agents have the default number of components (KMORAL)
+"""
+DistrustAgentSociety(n::Int; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
+    DistrustAgentSociety{n, KMORAL, Float64}(Matrix{Bool}(1 - eye(n)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:n], 
+                                             [λ*eye(KMORAL) for i in 1:n], μ*ones(n, n), s2*ones(n, n))
+
+
+"""
+    DistrustAgentSociety(n::Int)
+
+Construct a random DistrustAgentSociety with agents agentArray
+The agents have the default number of components (KMORAL)
+"""
+DistrustAgentSociety{K, T}(agentArray::Vector{MoralVector{K, T}}; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
+    DistrustAgentSociety{length(agentArray), K, T}(Matrix{Bool}(1 - eye(length(agentArray))), deepcopy(agentArray), 
+                                                  [λ*eye(KMORAL) for i in 1:length(agentArray)], μ*ones(length(agentArray), length(agentArray)), s2*ones(length(agentArray), length(agentArray)))
 
 
 ########################################
@@ -60,8 +82,19 @@ end
 ########################################
 
 
-"Computes `ε` agent `i` in a Society has about agent `j`"
+""" 
+    epssoc(soc::DistrustAgentSociety, i::Int, j::Int) 
+
+Computes `ε` agent `i` in a Society has about agent `j` 
+"""
 epssoc(soc::DistrustAgentSociety, i::Int, j::Int) = phi(soc.mu[i, j] / sqrt(1 + soc.s2[i, j]))
+
+""" 
+    epssoc(soc::DistrustAgentSociety) 
+
+Computes the matrix of distrust `ε` in a Society 
+"""
+epssoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}) = [epssoc(soc, i, j) for i in 1:N, j in 1:N]
 
 "Computes `γ` of agent `i` in a Society given MoralVector `x`"
 gamsoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = x[:]' * soc.C[i] * x[:] / K

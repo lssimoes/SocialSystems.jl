@@ -15,7 +15,8 @@ export epssoc, rhosoc, gamsoc, cogcost
 
 # Dynamics Export
 export metropolisStep!, metropolis!,
-        discreteStep!, discreteEvol!
+        discreteStep!, discreteEvol!,
+        computeDeltas
 
 include("constants.jl")
 
