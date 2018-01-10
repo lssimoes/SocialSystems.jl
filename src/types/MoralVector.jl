@@ -16,19 +16,19 @@ end
 
 
 """
-    MoralVector(k::Int)
-
-Construct a MoralVector with a random moral vector with default number of components `k`.
-"""
-MoralVector(k::Int) = MoralVector{k, Float64}(randSphere(k))
-
-
-"""
     MoralVector()
 
 Construct a MoralVector with a random moral vector with default number of components `KMORAL`.
 """
 MoralVector() = MoralVector{KMORAL, Float64}(randSphere(KMORAL))
+
+
+"""
+    MoralVector(k::Int)
+
+Construct a MoralVector with a random moral vector with default number of components `k`.
+"""
+MoralVector(k::Int) = MoralVector{k, Float64}(randSphere(k))
 
 
 """
@@ -53,7 +53,7 @@ start(mvector::MoralVector)        = 1
 done(mvector::MoralVector, s::Int) = s > length(mvector)
 next(mvector::MoralVector, s::Int) = (mvector[s], s+1)
 
-dot{K,T}(i::MoralVector{K,T}, j::MoralVector{K,T}) = (i.morals ⋅ j.morals)
+dot{K,T}(i::MoralVector{K,T}, j::MoralVector{K,T}) = (i[:] ⋅ j[:])
 
 function show(io::IO, mvector::MoralVector)
     N = length(mvector)
@@ -63,7 +63,9 @@ function show(io::IO, mvector::MoralVector)
     end
 end
 
-+(mvector::MoralVector, nvector::MoralVector) = MoralVector(mvector.morals + nvector.morals)
++(mvector::MoralVector, nvector::MoralVector) = MoralVector(mvector[:] + nvector[:])
+-(mvector::MoralVector, nvector::MoralVector) = MoralVector(mvector[:] - nvector[:])
+-(mvector::MoralVector) = MoralVector(-mvector[:])
 
 ###############################
 #  Moral Vector Definitions   #

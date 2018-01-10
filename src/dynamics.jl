@@ -109,23 +109,16 @@ function computeDeltas{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int
     σ  = sign(soc[j] ⋅ x)
     h  = soc[i] ⋅ x
     C  = soc.C[i]
+    Cx = C * x[:]
     γ  = gamsoc(soc, i, x)
     μ  = soc.mu[i, j]
     s2 = soc.s2[i, j]
 
-    oneSqOneS2 = 1/sqrt(1 + s2)
+    Fw, Fϵ = modfunc(h*σ/γ, μ/sqrt(1 + s2))
 
-    phiϵ = epssoc(soc, i, j)
-    phiw = phi(σ * h / γ)
-    Z    = phiϵ + phiw - 2*phiϵ*phiw
-    
-    E  = - log(Z)
-    Fw = (1 - phiϵ) * G(h/γ) / Z / γ
-    Fϵ = (1 - phiw) * G(μ/sqrt(1 + s2)) / Z * oneSqOneS2
-
-    return (σ * Fw * C * x[:] / γ, 
-            -Fw * (Fw + h*σ/γ^2) * C * (x[:] * x[:]') * C,
-            s2 * Fϵ / (1 + s2),
-            -s2^2 * Fϵ * (Fϵ + μ * oneSqOneS2))
+    return  (Fw * σ * Cx / γ, 
+            -Fw * (Fw + h*σ/γ) * Cx * Cx' / γ^2,
+             Fϵ * s2 / sqrt(1 + s2),
+            -Fϵ * (Fϵ + μ/sqrt(1 + s2)) * (s2 / sqrt(1 + s2))^2 )
 
 end

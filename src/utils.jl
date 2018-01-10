@@ -16,3 +16,15 @@ phi(x::Real) = cdf(Normal(), x)
 
 "The density function of the Normal distribution"
 G(x::Real) = pdf(Normal(), x)
+
+"Returns the two modulation functions: Fw and Fϵ"
+function modfunc(hσ1γ::Float64, μ1sqs2::Float64)
+    phiϵ = phi(μ1sqs2)
+    phiw = phi(hσ1γ)
+    Z    = phiϵ + phiw - 2*phiϵ*phiw
+    
+    Fw = (1 - 2phiϵ) * G(hσ1γ) / Z 
+    Fϵ = (1 - 2phiw) * G(μ1sqs2) / Z
+
+    return (Fw, Fϵ)
+end

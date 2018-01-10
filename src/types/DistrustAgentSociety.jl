@@ -97,7 +97,7 @@ Computes the matrix of distrust `ε` in a Society
 epssoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}) = [epssoc(soc, i, j) for i in 1:N, j in 1:N]
 
 "Computes `γ` of agent `i` in a Society given MoralVector `x`"
-gamsoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = x[:]' * soc.C[i] * x[:] / K
+gamsoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = x[:]' * soc.C[i] * x[:]
 
 "Computes `ρ` of agent `i` in a Society given MoralVector `x`"
 rhosoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gamsoc(soc, i, x))
