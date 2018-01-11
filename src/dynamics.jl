@@ -60,7 +60,9 @@ function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze =
     soc[i] = MoralVector(soc[i][:] + deltas[1])
     
     if freeze ∉ [:variances, :slowopinion]
-        soc.C[i]     += deltas[2]
+        C = soc.C[i] + deltas[2]
+        # avoiding numerical errors that 'dessymmetrize' the matrix C
+        soc.C[i] = (C .+ C') / 2
     end
     
     if freeze ∉ [:distrust]
