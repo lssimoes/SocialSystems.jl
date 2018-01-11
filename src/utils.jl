@@ -11,6 +11,9 @@ gammasoc(ρ::Float64) = sqrt(1 - ρ^2) / ρ
 "Computes `ρ` from `γ`"
 rhosoc(γ::Float64)   = 1/ sqrt(1 + γ^2)
 
+"Computes `ϵ` from `μ` and `s^2`"
+epssoc(μ::Float64, s2::Float64) = phi(μ/sqrt(1+s2))
+
 "The cumulative function of the Normal distribution"
 phi(x::Real) = cdf(Normal(), x)
 

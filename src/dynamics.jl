@@ -49,7 +49,7 @@ function metropolis!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; β = βDE
     return iter
 end
 
-function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze = :none)
+function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
@@ -71,6 +71,9 @@ function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze =
         soc.s2[i, j] += deltas[4]
     end
 
+    if verbose
+        return (i, j, deltas...)
+    end
     return i, j
 end
 
