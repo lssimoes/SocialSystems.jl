@@ -1,3 +1,8 @@
+""" 
+    metropolisStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Float64)
+
+Performs one metropolis step on Society soc using MoralVector x and temperature-like parameter β
+"""
 function metropolisStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Float64)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
@@ -20,7 +25,30 @@ function metropolisStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Fl
     return i, p_trans
 end
 
-function metropolis!{N,K,T}(soc::Society{N,K,T}; β = βDEF)
+""" 
+    metropolis!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; β::Float64 = βDEF)
+
+Performs metropolis on Society soc using MoralVector x and optional temperature-like parameter β 
+"""
+function metropolis!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; β::Float64 = βDEF)
+    # Maybe change this to a more fundamented convergence test
+    # We could also argue that people have a maximum number of interactions in society
+    iter  = 150*length(soc)
+
+    for i in 1:iter
+        # ignoring the MoralVector 'metropolisStep()' outputs
+        metropolisStep!(soc, x, β);
+    end
+
+    return iter
+end
+
+""" 
+    metropolis!{N,K,T}(soc::Society{N,K,T}; β::Float64 = βDEF)
+
+Performs metropolis on Society soc using random MoralVectors and optional temperature-like parameter β 
+"""
+function metropolis!{N,K,T}(soc::Society{N,K,T}; β::Float64 = βDEF)
     # Maybe change this to a more fundamented convergence test
     # We could also argue that people have a maximum number of interactions in society
     iter  = 150*length(soc)
@@ -36,19 +64,13 @@ function metropolis!{N,K,T}(soc::Society{N,K,T}; β = βDEF)
     return iter, x
 end
 
-function metropolis!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; β = βDEF)
-    # Maybe change this to a more fundamented convergence test
-    # We could also argue that people have a maximum number of interactions in society
-    iter  = 150*length(soc)
+""" 
+    discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
 
-    for i in 1:iter
-        # ignoring the MoralVector 'metropolisStep()' outputs
-        metropolisStep!(soc, x, β);
-    end
+Performs one discrete update step on Society soc using MoralVector x
 
-    return iter
-end
-
+* freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
+"""
 function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
@@ -77,6 +99,13 @@ function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze =
     return i, j
 end
 
+""" 
+    discreteEvol!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; freeze = :none)
+
+Performs the discrete evolution on Society soc using MoralVector x
+
+* freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
+"""
 function discreteEvol!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; freeze = :none)
     # Maybe change this to a more fundamented convergence test
     # We could also argue that people have a maximum number of interactions in society
@@ -90,6 +119,13 @@ function discreteEvol!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K, T}; freeze 
     return iter
 end
 
+""" 
+    discreteEvol!{N,K,T}(soc::Society{N,K,T}; freeze = :none)
+
+Performs one discrete update step on Society soc using several random MoralVectors
+
+* freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
+"""
 function discreteEvol!{N,K,T}(soc::Society{N,K,T}; freeze = :none)
     # Maybe change this to a more fundamented convergence test
     # We could also argue that people have a maximum number of interactions in society
@@ -103,10 +139,43 @@ function discreteEvol!{N,K,T}(soc::Society{N,K,T}; freeze = :none)
     return iter
 end
 
+""" 
+    societyHistory(soc::DistrustAgentSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+
+Performs the discrete update on Society soc using a number of P MoralVectors in N*P iterations
+
+* freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
+* sequential: whether the random vectors are presented sequentially, one after the other, or in random order
+
+Returns the history of the evolution and the deltas used in the evolution. IF verbose is set to true, also returns the order of the MoralVectors presented
+"""
+function societyHistory!(soc::DistrustAgentSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+    xs   = [MoralVector() for i in 1:P];
+
+    if sequential
+         xi = repeat(xs, inner = N)
+    else xi = rand(xs, N*P)
+    end
+   
+    history = [deepcopy(pair)]
+    deltas  = zeros(1, size(fieldnames(soc), 1) - 1)
+
+    for i in 1:P*N
+        deltasi = discreteStep!(pair, xi[i], freeze = freeze, verbose = true)[3:end]
+        append!(history, [deepcopy(pair)])
+        deltas = vcat(deltas, [deltasi...]')
+    end
+
+    if verbose
+        return history, deltas, xi
+    else return history, deltas
+    end
+end
+
 """
     computeDeltas{K, T}(agi::MoralVector{K, T}, agj::MoralVector{K, T}, x::MoralVector{K,T}, C::Matrix{Float64}, μ::Float64, s2::Float64)
 
-    Compute the evolution delta for each of the variables of an agent i listening agent j about issue x given all other parameters
+Compute the evolution delta for each of the variables of an agent i listening agent j about issue x given all other parameters
 """
 function computeDeltas{K, T}(agi::MoralVector{K, T}, agj::MoralVector{K, T}, x::MoralVector{K,T}, C::Matrix{Float64}, μ::Float64, s2::Float64)
     σ  = sign(agj ⋅ x)
@@ -126,7 +195,7 @@ end
 """
     computeDeltas{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
 
-    Compute the evolution delta for each of the variables of an agent i from society soc listening agent j about issue x
+Compute the evolution delta for each of the variables of an agent i from society soc listening agent j about issue x
 """
 function computeDeltas{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
     σ  = sign(soc[j] ⋅ x)
@@ -147,27 +216,4 @@ function computeDeltas{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int
              Fϵ * s2 / sqrt(1 + s2),
             -Fϵ * (Fϵ + μ1sqs2) * s2^2 / (1 + s2) )
 
-end
-
-function societyHistory(;freeze = :none, N::Int = 50, P::Int = 6)
-    agi = MoralVector([0.71348, -0.55715, 0.28167, 0.01930, -0.31753])
-    agj = MoralVector([0.11285, 0.54261, 0.61060, 0.34114, -0.45125])
-
-    xs   = [MoralVector() for i in 1:P];
-    xi   = rand(xs, N*P);
-    # xi   = repeat(xs, inner = N);
-
-    # μ = +0.5, λ = 1.2, s2 = 1.2)
-    pair = DistrustAgentSociety([agi, agj], μ = -15., λ = 2., s2 = 2.);
-
-    history = [deepcopy(pair)];
-    deltas  = [0. 0. 0. 0.];
-
-    for i in 1:P*N
-        deltasi = discreteStep!(pair, xi[i], freeze = freeze, verbose = true)[3:end]
-        append!(history, [deepcopy(pair)])
-        deltas = vcat(deltas, [deltasi...]')
-    end
-
-    return history, deltas
 end

@@ -22,8 +22,8 @@ Type representing a generic Bayesian Agent Society
 * links (Matrix{T}): N×N-matrix that describes the interactions of the agents of the society
 * agents (Vector{MoralVector}): N-vector of the MoralVector{K, T}s of the DistrustAgentSociety
 * C (Vector{Matrix{Float64}}):
-* mu (Vector{Vector{Float64}}):
-* s2 (Vector{Vector{Float64}}):
+* mu (Matrix{Float64}):
+* s2 (Matrix{Float64}):
 """
 struct DistrustAgentSociety{N, K, T <: Real} <: Society{N, K, T}
     links::Matrix{Bool}
