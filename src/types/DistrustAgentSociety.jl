@@ -129,3 +129,26 @@ end
 
 #     return - log( ε + (1 - 2ε) * phi(sign(agj ⋅ x) * (agi ⋅ x) / gam) )
 # end
+
+"Returns the two modulation functions: Fw and Fϵ"
+function modfunc{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
+    σ  = sign(soc[j] ⋅ x)
+    h  = soc[i] ⋅ x
+    C  = soc.C[i]
+    Cx = C * x[:]
+    γ  = gamsoc(soc, i, x)
+    μ  = soc.mu[i, j]
+    s2 = soc.s2[i, j]
+
+    hσ1γ   = h*σ/γ
+    μ1sqs2 = μ/sqrt(1 + s2)
+
+    phiϵ = phi(μ1sqs2)
+    phiw = phi(hσ1γ)
+    Z    = phiϵ + phiw - 2*phiϵ*phiw
+    
+    Fw = (1 - 2phiϵ) * G(hσ1γ) / Z 
+    Fϵ = (1 - 2phiw) * G(μ1sqs2) / Z
+
+    return (Fw, Fϵ)
+end
