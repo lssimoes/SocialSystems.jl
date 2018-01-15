@@ -134,8 +134,6 @@ end
 function modfunc{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
     σ  = sign(soc[j] ⋅ x)
     h  = soc[i] ⋅ x
-    C  = soc.C[i]
-    Cx = C * x[:]
     γ  = gamsoc(soc, i, x)
     μ  = soc.mu[i, j]
     s2 = soc.s2[i, j]
