@@ -163,17 +163,17 @@ Returns the history of the evolution and the deltas used in the evolution. IF ve
 function societyHistory!(soc::DistrustAgentSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
     xs   = [MoralVector() for i in 1:P];
 
-    if sequential
+    if sequential && N > 1
          xi = repeat(xs, inner = N)
     else xi = rand(xs, N*P)
     end
    
-    history = [deepcopy(pair)]
+    history = [deepcopy(soc)]
     deltas  = zeros(1, size(fieldnames(soc), 1) - 1)
 
     for i in 1:P*N
-        deltasi = discreteStep!(pair, xi[i], freeze = freeze, verbose = true)[3:end]
-        append!(history, [deepcopy(pair)])
+        deltasi = discreteStep!(soc, xi[i], freeze = freeze, verbose = true)[3:end]
+        append!(history, [deepcopy(soc)])
         deltas = vcat(deltas, [deltasi...]')
     end
 
