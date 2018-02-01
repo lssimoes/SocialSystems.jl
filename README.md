@@ -10,7 +10,7 @@ julia> Pkg.clone("https://github.com/kaslusimoes/SocialSystems.jl.git")
 
 ## A simple example
 
-We define a BasicAgentSociety and perform MCMC until equilibration around an issue. After that, we can verify the magnetization of the society is stabilized.
+We define a BasicSociety and perform MCMC until equilibration around an issue. After that, we can verify the magnetization of the society is stabilized.
 
 ```julia
 julia> using SocialSystems, Plots
@@ -19,7 +19,7 @@ julia> N   = 100
 julia> ρ   = 0.2
 julia> ε   = 0.1
 
-julia> soc     = BasicAgentSociety(n, ρ, ε)
+julia> soc     = BasicSociety(n, ρ, ε)
 julia> iter, x = metropolis!(soc, β=15.)
 
 julia> nsteps = 100

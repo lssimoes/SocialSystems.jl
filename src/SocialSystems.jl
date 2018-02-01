@@ -9,7 +9,7 @@ import Base: +, -, length, size, getindex, setindex!, start, done, next, show, d
 export randSphere, gammasoc, phi, G
 
 # Types Export
-export MoralVector, Society, BasicAgentSociety, DistrustAgentSociety
+export MoralVector, Society, BasicSociety, DistrustSociety
 export agents, interactions, insertagent!, hamiltonian, magnetization, believeness, quadrupole, consensus
 export epssoc, rhosoc, gamsoc, cogcost
 
@@ -24,8 +24,8 @@ include("utils.jl")
 
 include("types/MoralVector.jl")
 include("types/Society.jl")
-include("types/BasicAgentSociety.jl")
-include("types/DistrustAgentSociety.jl")
+include("types/BasicSociety.jl")
+include("types/DistrustSociety.jl")
 
 include("dynamics.jl")
 

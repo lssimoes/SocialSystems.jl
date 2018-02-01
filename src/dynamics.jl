@@ -151,7 +151,7 @@ function discreteEvol!{N,K,T}(soc::Society{N,K,T}; freeze = :none)
 end
 
 """ 
-    societyHistory(soc::DistrustAgentSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+    societyHistory(soc::DistrustSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
 
 Performs the discrete update on Society soc using a number of P MoralVectors in N*P iterations
 
@@ -160,7 +160,7 @@ Performs the discrete update on Society soc using a number of P MoralVectors in 
 
 Returns the history of the evolution and the deltas used in the evolution. IF verbose is set to true, also returns the order of the MoralVectors presented
 """
-function societyHistory!(soc::DistrustAgentSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+function societyHistory!(soc::DistrustSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
     xs   = [MoralVector() for i in 1:P];
 
     if sequential && N > 1
@@ -204,11 +204,11 @@ function computeDeltas{K, T}(agi::MoralVector{K, T}, agj::MoralVector{K, T}, x::
 end
 
 """
-    computeDeltas{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
+    computeDeltas{N, K, T}(soc::DistrustSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
 
 Compute the evolution delta for each of the variables of an agent i from society soc listening agent j about issue x
 """
-function computeDeltas{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
+function computeDeltas{N, K, T}(soc::DistrustSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
     σ  = sign(soc[j] ⋅ x)
     h  = soc[i] ⋅ x
     C  = soc.C[i]

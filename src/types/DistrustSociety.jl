@@ -1,8 +1,8 @@
 ################################
-#  DistrustAgentSociety Type   #
+#  DistrustSociety Type   #
 ################################
 
-# struct DistrustAgentSociety{N, K, T <: Real}
+# struct DistrustSociety{N, K, T <: Real}
 #     """
 #     ------
 #     w0: array with shape (N, K) - opinion vector with
@@ -14,18 +14,18 @@
 #     """
 
 """
-    type DistrustAgentSociety{N, K, T}
+    type DistrustSociety{N, K, T}
 
 Type representing a generic Bayesian Agent Society
 
 ### Fields
 * links (Matrix{T}): N×N-matrix that describes the interactions of the agents of the society
-* agents (Vector{MoralVector}): N-vector of the MoralVector{K, T}s of the DistrustAgentSociety
+* agents (Vector{MoralVector}): N-vector of the MoralVector{K, T}s of the DistrustSociety
 * C (Vector{Matrix{Float64}}):
 * mu (Matrix{Float64}):
 * s2 (Matrix{Float64}):
 """
-struct DistrustAgentSociety{N, K, T <: Real} <: Society{N, K, T}
+struct DistrustSociety{N, K, T <: Real} <: Society{N, K, T}
     links::Matrix{Bool}
     agents::Vector{MoralVector{K, T}}
     C::Vector{Matrix{Float64}}
@@ -35,80 +35,80 @@ end
 
 
 """
-    DistrustAgentSociety()
+    DistrustSociety()
 
-Construct a random DistrustAgentSociety with default size NSOC
+Construct a random DistrustSociety with default size NSOC
 The agents have the default number of components (KMORAL)
 """
-DistrustAgentSociety() = 
-    DistrustAgentSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], 
+DistrustSociety() = 
+    DistrustSociety{NSOC, KMORAL, Float64}(Matrix{Bool}(1 - eye(NSOC)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:NSOC], 
                                                 [λDEF*eye(KMORAL) for i in 1:NSOC], zeros(NSOC, NSOC), s2DEF*ones(NSOC, NSOC))
 
 """
-    DistrustAgentSociety(n::Int)
+    DistrustSociety(n::Int)
 
-Construct a random DistrustAgentSociety with size n
+Construct a random DistrustSociety with size n
 The agents have the default number of components (KMORAL)
 """
-DistrustAgentSociety(n::Int; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
-    DistrustAgentSociety{n, KMORAL, Float64}(Matrix{Bool}(1 - eye(n)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:n], 
+DistrustSociety(n::Int; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
+    DistrustSociety{n, KMORAL, Float64}(Matrix{Bool}(1 - eye(n)), MoralVector{KMORAL, Float64}[MoralVector() for i in 1:n], 
                                              [λ*eye(KMORAL) for i in 1:n], μ*ones(n, n), s2*ones(n, n))
 
 
 """
-    DistrustAgentSociety(n::Int)
+    DistrustSociety(n::Int)
 
-Construct a random DistrustAgentSociety with agents agentArray
+Construct a random DistrustSociety with agents agentArray
 The agents have the default number of components (KMORAL)
 """
-DistrustAgentSociety{K, T}(agentArray::Vector{MoralVector{K, T}}; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
-    DistrustAgentSociety{length(agentArray), K, T}(Matrix{Bool}(1 - eye(length(agentArray))), deepcopy(agentArray), 
+DistrustSociety{K, T}(agentArray::Vector{MoralVector{K, T}}; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
+    DistrustSociety{length(agentArray), K, T}(Matrix{Bool}(1 - eye(length(agentArray))), deepcopy(agentArray), 
                                                   [λ*eye(KMORAL) for i in 1:length(agentArray)], μ*ones(length(agentArray), length(agentArray)), s2*ones(length(agentArray), length(agentArray)))
 
 
 ########################################
-#  DistrustAgentSociety Redefinitions  #
+#  DistrustSociety Redefinitions  #
 ########################################
 
-function show(io::IO, soc::DistrustAgentSociety)
+function show(io::IO, soc::DistrustSociety)
     N, K = size(soc)
-    print(io, N, "-sized DistrustAgentSociety on a ", K, "-dimensional Moral space")
+    print(io, N, "-sized DistrustSociety on a ", K, "-dimensional Moral space")
     #@printf io "ρ: %.4f\t ε: %.4f" soc.ρ soc.ε
 end
 
 
 ########################################
-#   DistrustAgentSociety Definitions   #
+#   DistrustSociety Definitions   #
 ########################################
 
 
 """ 
-    epssoc(soc::DistrustAgentSociety, i::Int, j::Int) 
+    epssoc(soc::DistrustSociety, i::Int, j::Int) 
 
 Computes `ε` agent `i` in a Society has about agent `j` 
 """
-epssoc(soc::DistrustAgentSociety, i::Int, j::Int) = phi(soc.mu[i, j] / sqrt(1 + soc.s2[i, j]))
+epssoc(soc::DistrustSociety, i::Int, j::Int) = phi(soc.mu[i, j] / sqrt(1 + soc.s2[i, j]))
 
 """ 
-    epssoc(soc::DistrustAgentSociety) 
+    epssoc(soc::DistrustSociety) 
 
 Computes the matrix of distrust `ε` in a Society 
 """
-epssoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}) = [epssoc(soc, i, j) for i in 1:N, j in 1:N]
+epssoc{N, K, T}(soc::DistrustSociety{N, K, T}) = [epssoc(soc, i, j) for i in 1:N, j in 1:N]
 
 "Computes `γ` of agent `i` in a Society given MoralVector `x`"
-gamsoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = x[:]' * soc.C[i] * x[:]
+gamsoc{N, K, T}(soc::DistrustSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = sqrt(x[:]' * soc.C[i] * x[:])
 
 "Computes `ρ` of agent `i` in a Society given MoralVector `x`"
-rhosoc{N, K, T}(soc::DistrustAgentSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gamsoc(soc, i, x))
+rhosoc{N, K, T}(soc::DistrustSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gamsoc(soc, i, x))
 
 
 """
-    cogcost{K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+    cogcost{K,T}(soc::DistrustSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
 
 Cognitive cost MoralVector `soc[i]` suffers when learning MoralVector `soc[j]`'s opinion about MoralVector `x`
 """
-function cogcost{N, K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+function cogcost{N, K,T}(soc::DistrustSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
     gam = gamsoc(soc, i, x)
     ε   = epssoc(soc, i, j)
     agi = soc[i]
@@ -118,11 +118,11 @@ function cogcost{N, K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::
 end
 
 # """
-#     cogcost{K,T}(soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+#     cogcost{K,T}(soc::DistrustSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
 
 # Cognitive cost MoralVector `agi` suffers when learning MoralVector `soc[i]`'s opinion about MoralVector `x`
 # """
-# function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::DistrustAgentSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
+# function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::DistrustSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
 #     gam = gamsoc(soc, i, x)
 #     ε   = epssoc(soc, i, j)
 #     agj = soc[j]
@@ -131,7 +131,7 @@ end
 # end
 
 "Returns the two modulation functions: Fw and Fϵ"
-function modfunc{N, K, T}(soc::DistrustAgentSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
+function modfunc{N, K, T}(soc::DistrustSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
     σ  = sign(soc[j] ⋅ x)
     h  = soc[i] ⋅ x
     γ  = gamsoc(soc, i, x)
