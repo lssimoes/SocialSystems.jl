@@ -82,18 +82,7 @@ function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze =
     soc[i] = MoralVector(soc[i][:] + deltas[1])
     
     if freeze ∉ [:variances, :slowopinion]
-        C = soc.C[i] + deltas[2]
-        
-        # do something because deltas[2] messes with the positive definiteness of C
-        if !issymmetric(C)
-            C = (C+C')/2
-        end
-        λ = minimum(eigvals(C)) 
-        if λ < 0.
-            C -= 10λ*I
-        end
-
-        soc.C[i] = C
+        soc.C[i] += deltas[2]
     end
     
     if freeze ∉ [:distrust]
@@ -192,7 +181,7 @@ function computeDeltas{K, T}(agi::MoralVector{K, T}, agj::MoralVector{K, T}, x::
     σ  = sign(agj ⋅ x)
     h  = agi ⋅ x
     Cx = C * x[:]
-    γ  = x[:]' * C * x[:]
+    γ  = sqrt(x[:]' * C * x[:])
 
     Fw, Fϵ = modfunc(h*σ/γ, μ/sqrt(1 + s2))
 
