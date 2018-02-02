@@ -8,8 +8,8 @@ function metropolisStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Fl
     j = sample(weights(soc[i, :]))
 
     # Sample a 'proposed' MoralVector using a MultivariateGaussian centered at the old Agent
-    propag   = MoralVector(rand(MvNormal(soc[i][:], ones(5))))
-    newcost  = cogcost(propag, soc, i, j, x)
+    proposed = MoralVector(rand(MvNormal(soc[i][:], ones(5))))
+    newcost  = cogcost(proposed, soc, i, j, x)
 
     ΔV = newcost - cogcost(soc, i, j, x)
 
@@ -18,8 +18,8 @@ function metropolisStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}, β::Fl
 
     # if (p = rand()) < p_trans
     if rand() < p_trans
-        insertagent!(soc, propag, i)
-        return propag
+        insertagent!(soc, proposed, i)
+        return proposed
     end
 
     return i, p_trans
@@ -65,13 +65,13 @@ function metropolis!{N,K,T}(soc::Society{N,K,T}; β::Float64 = βDEF)
 end
 
 """ 
-    discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
+    discreteStep!{N,K,T}(soc::DistrustSociety{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
 
 Performs one discrete update step on Society soc using MoralVector x
 
 * freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
 """
-function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
+function discreteStep!{N,K,T}(soc::DistrustSociety{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
     i = rand(1:N)
     j = sample(weights(soc[i, :]))
 
@@ -93,6 +93,28 @@ function discreteStep!{N,K,T}(soc::Society{N,K,T}, x::MoralVector{K,T}; freeze =
         soc.s2[i, j] += deltas[4]
     end
 
+    if verbose
+        return (i, j, deltas...)
+    end
+    return i, j
+end
+
+
+""" 
+    discreteStep!{N,K,T}(soc::BasicSociety{N,K,T}, x::MoralVector{K,T}; freeze = :none, verbose = false)
+
+Performs one discrete update step on Society soc using MoralVector x
+"""
+function discreteStep!{N,K,T}(soc::BasicSociety{N,K,T}, x::MoralVector{K,T}; verbose = false, freeze = :none)
+    i = rand(1:N)
+    j = sample(weights(soc[i, :]))
+
+    # i learns from j
+    deltas = computeDeltas(soc, i, j, x)
+    
+    # update the parameters 
+    soc[i] = MoralVector(soc[i][:] + deltas[1])
+    
     if verbose
         return (i, j, deltas...)
     end
@@ -140,7 +162,7 @@ function discreteEvol!{N,K,T}(soc::Society{N,K,T}; freeze = :none)
 end
 
 """ 
-    societyHistory(soc::DistrustSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+    societyHistory(soc::Society, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
 
 Performs the discrete update on Society soc using a number of P MoralVectors in N*P iterations
 
@@ -149,7 +171,7 @@ Performs the discrete update on Society soc using a number of P MoralVectors in 
 
 Returns the history of the evolution and the deltas used in the evolution. IF verbose is set to true, also returns the order of the MoralVectors presented
 """
-function societyHistory!(soc::DistrustSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+function societyHistory!(soc::Society, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
     xs   = [MoralVector() for i in 1:P];
 
     if sequential && N > 1
@@ -215,5 +237,25 @@ function computeDeltas{N, K, T}(soc::DistrustSociety{N,K,T}, i::Int, j::Int, x::
             -Fw * (Fw + hσ1γ) * Cx * Cx' / γ^2,
              Fϵ * s2 / sqrt(1 + s2),
             -Fϵ * (Fϵ + μ1sqs2) * s2^2 / (1 + s2) )
+
+end
+
+"""
+    computeDeltas{N, K, T}(soc::BasicSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
+
+Compute the evolution delta for each of the variables of an agent i from society soc listening agent j about issue x
+"""
+function computeDeltas{N, K, T}(soc::BasicSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
+    σj   = sign(soc[j] ⋅ x)
+    hi   = soc[i] ⋅ x
+    γi   = gamsoc(soc, i)#, x)
+    ϵij = epssoc(soc, i, j)
+
+    hσ1γ = hi*σj/γi
+    phiw = phi(hσ1γ)
+
+    Z    = ϵij + phiw - 2*ϵij*phiw
+    
+    return (1 - 2ϵij) * G(hσ1γ) * σj * γi * x[:] / Z 
 
 end
