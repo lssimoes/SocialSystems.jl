@@ -56,10 +56,9 @@ DistrustSociety(n::Int; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = 
 
 
 """
-    DistrustSociety(n::Int)
+    DistrustSociety(agentArray::Vector{MoralVector{K, T}})
 
-Construct a random DistrustSociety with agents agentArray
-The agents have the default number of components (KMORAL)
+Construct a DistrustSociety with agents agentArray
 """
 DistrustSociety{K, T}(agentArray::Vector{MoralVector{K, T}}; λ::Float64 = λDEF, μ::Float64 = μDEF, s2::Float64 = s2DEF) = 
     DistrustSociety{length(agentArray), K, T}(Matrix{Bool}(1 - eye(length(agentArray))), deepcopy(agentArray), 
