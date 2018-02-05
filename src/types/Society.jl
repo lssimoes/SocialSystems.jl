@@ -159,12 +159,15 @@ end
 
 Evaluates the consensus of a Society, that is, the matrix of the correlations between the MoralVectors inner representations
 """
-function consensus{N,K,T}(soc::Society{N,K,T})
+function consensus{N,K,T}(soc::Society{N,K,T}; format = :none)
     ψ = zeros(N, N)
 
     for i in 1:N for j in (i+1):N
         ψ[i, j] = consensus(soc, i, j)
     end end
 
+    if format == :ordered   
+        return ψ[ψ .!= 0.]
+    end
     return ψ
 end

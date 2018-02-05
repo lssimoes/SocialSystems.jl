@@ -67,6 +67,9 @@ end
 -(mvector::MoralVector, nvector::MoralVector) = MoralVector(mvector[:] - nvector[:])
 -(mvector::MoralVector) = MoralVector(-mvector[:])
 
+# need a better way to sum weigthed MoralVector's
+*(p::T, mvector::MoralVector{K, T}) where {T <: Real, K} = p*mvector[:]
+
 ###############################
 #  Moral Vector Definitions   #
 ###############################

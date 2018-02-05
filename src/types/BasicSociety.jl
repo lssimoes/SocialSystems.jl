@@ -66,8 +66,8 @@ BasicSociety(n::Int, ρ::Vector{Float64}, ε::Matrix{Float64}) =
 
 Construct a BasicSociety with agents agentArray and parameters (ρ, ε).
 """
-BasicSociety(agentArray::Vector{MoralVector{K, T}}, ρ::Vector{Float64}, ε::Matrix{Float64}) = 
-    BasicSociety{length(agentArray, K, T}(Matrix{Bool}(1 - eye(length(agentArray))), deepcopy(agentArray), ρ, ε)
+BasicSociety{K, T}(agentArray::Vector{MoralVector{K, T}}, ρ::Vector{Float64}, ε::Matrix{Float64}) = 
+    BasicSociety{length(agentArray), K, T}(Matrix{Bool}(1 - eye(length(agentArray))), deepcopy(agentArray), ρ, ε)
 
 
 ######################################
@@ -103,13 +103,13 @@ epssoc{N, K, T}(soc::BasicSociety{N, K, T}) = [epssoc(soc, i, j) for i in 1:N, j
 rhosoc(soc::BasicSociety, i::Int) = soc.ρ[i]
 
 "Computes `γ` of agent `i` in a Society"
-gamsoc(soc::BasicSociety, i::Int) = gamsoc(rhosoc(soc, i))
+gammasoc(soc::BasicSociety, i::Int) = gammasoc(rhosoc(soc, i))
 
 "Computes `γ` of agent `i` in a Society given MoralVector `x`"
-gamsoc{N, K, T}(soc::BasicSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = sqrt(x[:]' * soc.C[i] * x[:])
+gammasoc{N, K, T}(soc::BasicSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = sqrt(x[:]' * soc.C[i] * x[:])
 
 "Computes `ρ` of agent `i` in a Society given MoralVector `x`"
-rhosoc{N, K, T}(soc::BasicSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gamsoc(soc, i, x))
+rhosoc{N, K, T}(soc::BasicSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhosoc(gammasoc(soc, i, x))
 
 
 """
@@ -118,7 +118,7 @@ rhosoc{N, K, T}(soc::BasicSociety{N, K, T}, i::Int, x::MoralVector{K, T}) = rhos
 Cognitive cost MoralVector `soc[i]` suffers when learning MoralVector `soc[j]`'s opinion about MoralVector `x`
 """
 function cogcost{N, K,T}(soc::BasicSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
-    γi  = gamsoc(soc, i)
+    γi  = gammasoc(soc, i)
     εij = epssoc(soc, i, j)
     agi = soc[i]
     agj = soc[j]
@@ -132,7 +132,7 @@ end
 Cognitive cost MoralVector `agi` suffers when learning MoralVector `soc[i]`'s opinion about MoralVector `x`
 """
 function cogcost{N, K,T}(agi::MoralVector{K,T}, soc::BasicSociety{N, K, T}, i::Int, j::Int, x::MoralVector{K,T})
-    γi  = gamsoc(soc, i)
+    γi  = gammasoc(soc, i)
     εij = epssoc(soc, i, j)
     agj = soc[j]
 

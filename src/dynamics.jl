@@ -110,13 +110,13 @@ function discreteStep!{N,K,T}(soc::BasicSociety{N,K,T}, x::MoralVector{K,T}; ver
     j = sample(weights(soc[i, :]))
 
     # i learns from j
-    deltas = computeDeltas(soc, i, j, x)
+    delta = computeDeltas(soc, i, j, x)
     
     # update the parameters 
-    soc[i] = MoralVector(soc[i][:] + deltas[1])
+    soc[i] = MoralVector(soc[i][:] + delta)
     
     if verbose
-        return (i, j, deltas...)
+        return (i, j, delta)
     end
     return i, j
 end
@@ -162,16 +162,16 @@ function discreteEvol!{N,K,T}(soc::Society{N,K,T}; freeze = :none)
 end
 
 """ 
-    societyHistory(soc::Society, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+    societyHistory(soc::DistrustSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
 
 Performs the discrete update on Society soc using a number of P MoralVectors in N*P iterations
 
 * freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
 * sequential: whether the random vectors are presented sequentially, one after the other, or in random order
 
-Returns the history of the evolution and the deltas used in the evolution. IF verbose is set to true, also returns the order of the MoralVectors presented
+Returns the history of the evolution and the deltas used in the evolution. If verbose is set to true, also returns the order of the MoralVectors presented
 """
-function societyHistory!(soc::Society, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+function societyHistory!(soc::DistrustSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
     xs   = [MoralVector() for i in 1:P];
 
     if sequential && N > 1
@@ -193,6 +193,40 @@ function societyHistory!(soc::Society, N::Int, P::Int; freeze = :none, sequentia
     else return history, deltas
     end
 end
+
+""" 
+    societyHistory(soc::BasicSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+
+Performs the discrete update on Society soc using a number of P MoralVectors in N*P iterations
+
+* freeze: freezes the dynamics of one of more variables (:none, :variances, :distrust, :slowtrust, :slowopinion)
+* sequential: whether the random vectors are presented sequentially, one after the other, or in random order
+
+Returns the history of the evolution and the deltas used in the evolution. If verbose is set to true, also returns the order of the MoralVectors presented
+"""
+function societyHistory!(soc::BasicSociety, N::Int, P::Int; sequential::Bool = false, verbose::Bool = false)
+    xs   = [MoralVector() for i in 1:P];
+
+    if sequential && N > 1
+         xi = repeat(xs, inner = N)
+    else xi = rand(xs, N*P)
+    end
+   
+    history = [deepcopy(soc)]
+    deltas  = zeros(1, size(fieldnames(soc), 1) - 3)
+
+    for i in 1:P*N
+        dW = discreteStep!(soc, xi[i], freeze = :none, verbose = true)[3]
+        append!(history, [deepcopy(soc)])
+        deltas = vcat(deltas, [dW]')
+    end
+
+    if verbose
+        return history, deltas, xi
+    else return history, deltas
+    end
+end
+
 
 """
     computeDeltas{K, T}(agi::MoralVector{K, T}, agj::MoralVector{K, T}, x::MoralVector{K,T}, C::Matrix{Float64}, μ::Float64, s2::Float64)
@@ -224,7 +258,7 @@ function computeDeltas{N, K, T}(soc::DistrustSociety{N,K,T}, i::Int, j::Int, x::
     h  = soc[i] ⋅ x
     C  = soc.C[i]
     Cx = C * x[:]
-    γ  = gamsoc(soc, i, x)
+    γ  = gammasoc(soc, i, x)
     μ  = soc.mu[i, j]
     s2 = soc.s2[i, j]
 
@@ -246,9 +280,9 @@ end
 Compute the evolution delta for each of the variables of an agent i from society soc listening agent j about issue x
 """
 function computeDeltas{N, K, T}(soc::BasicSociety{N,K,T}, i::Int, j::Int, x::MoralVector{K,T})
-    σj   = sign(soc[j] ⋅ x)
-    hi   = soc[i] ⋅ x
-    γi   = gamsoc(soc, i)#, x)
+    σj  = sign(soc[j] ⋅ x)
+    hi  = soc[i] ⋅ x
+    γi  = gammasoc(soc, i) #, x)
     ϵij = epssoc(soc, i, j)
 
     hσ1γ = hi*σj/γi
