@@ -195,7 +195,7 @@ function societyHistory!(soc::DistrustSociety, N::Int, P::Int; freeze = :none, s
 end
 
 """ 
-    societyHistory(soc::BasicSociety, N::Int, P::Int; freeze = :none, sequential::Bool = false, verbose::Bool = false)
+    societyHistory(soc::BasicSociety, N::Int, P::Int; issues = :none, freeze = :none, sequential::Bool = false, verbose::Bool = false)
 
 Performs the discrete update on Society soc using a number of P MoralVectors in N*P iterations
 
@@ -204,8 +204,11 @@ Performs the discrete update on Society soc using a number of P MoralVectors in 
 
 Returns the history of the evolution and the deltas used in the evolution. If verbose is set to true, also returns the order of the MoralVectors presented
 """
-function societyHistory!(soc::BasicSociety, N::Int, P::Int; sequential::Bool = false, verbose::Bool = false)
-    xs   = [MoralVector() for i in 1:P];
+function societyHistory!(soc::BasicSociety, N::Int, P::Int; issues = :none, sequential::Bool = false, verbose::Bool = false)
+    if typeof(issues) == Matrix{Float64} && size(issues, 2) == size(soc, 2)
+         xs = [MoralVector(issues[i, :]) for i in rand(1:size(issues, 1), P)]
+    else xs = [MoralVector() for i in 1:P];
+    end 
 
     if sequential && N > 1
          xi = repeat(xs, inner = N)

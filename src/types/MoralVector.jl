@@ -74,3 +74,36 @@ end
 #  Moral Vector Definitions   #
 ###############################
 
+"""
+    consensus(ags::Vector{MoralVector}, i::Int, j::Int)
+
+Evaluates the consensus of MoralVectors i and j from a Vector of MoralVectors
+"""
+function consensus(ags::Vector{MoralVector{K, T}}, i::Int, j::Int) where {T <: Real, K}
+    N = length(ags)
+    if 0 < i <= N && 0 < j <= N
+        return ags[i] ⋅ ags[j]
+    else
+        error("The indices given are out of range")
+    end
+end
+
+
+"""
+    consensus(ags::::Vector{MoralVector})
+
+Evaluates the consensus of Vector of MoralVectors, that is, the matrix of the correlations between the MoralVectors inner representations
+"""
+function consensus(ags::Vector{MoralVector{K, T}}; format = :none) where {T <: Real, K}
+    N = length(ags)
+    ψ = zeros(N, N)
+
+    for i in 1:N for j in (i+1):N
+        ψ[i, j] = consensus(ags, i, j)
+    end end
+
+    if format == :ordered   
+        return ψ[ψ .!= 0.]
+    end
+    return ψ
+end

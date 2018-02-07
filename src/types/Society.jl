@@ -9,12 +9,15 @@ abstract type Society{N, K, T} end
 #  Society Redefinitions  #
 ###########################
 
-length(soc::Society)    = length(soc.agents)
-size(soc::Society)      = (length(soc.agents), length(soc.agents[1]))
+length(soc::Society)       = length(soc.agents)
+size(soc::Society)         = (length(soc.agents), length(soc.agents[1]))
+size(soc::Society, i::Int) = size(soc)[i]
 
 getindex(soc::Society, i::Int)                     = soc.agents[i]
 getindex(soc::Society, c::Colon)                   = soc.agents[:]
 getindex(soc::Society, c1::Colon, c2::Colon)       = soc.links[:, :]
+endof(soc::Society)                                = soc.agents[end]
+
 
 getindex(soc::Society, i::Int, j::Int)             = soc.links[i, j]
 getindex(soc::Society, i::Int, r::UnitRange)       = soc.links[i, r]
