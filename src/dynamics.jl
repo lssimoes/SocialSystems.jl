@@ -293,6 +293,10 @@ function computeDeltas{N, K, T}(soc::BasicSociety{N,K,T}, i::Int, j::Int, x::Mor
 
     Z    = ϵij + phiw - 2*ϵij*phiw
     
-    return (1 - 2ϵij) * G(hσ1γ) * σj * γi * x[:] / Z 
+    ret = (1 - 2ϵij) * G(hσ1γ) * σj * γi * x[:] / Z 
+    if isnan(ret)
+        return 0.
+    end
+    return ret
 
 end
