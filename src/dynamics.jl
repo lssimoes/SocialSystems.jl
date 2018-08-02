@@ -300,3 +300,90 @@ function computeDeltas{N, K, T}(soc::BasicSociety{N,K,T}, i::Int, j::Int, x::Mor
     return ret
 
 end
+
+"""
+    pickIssue{N, K, T}(soc::DistrustSociety{N, K, T}, i::Int; err::Float64 = 1e-4, niter::Int = 500, α::Float64 = 0.1, verbose = false)
+
+Pick a specific issue x trying to maximize the change in trust of agent-listener i
+"""
+function pickIssue{N, K, T}(soc::DistrustSociety{N, K, T}, i::Int;
+                  err::Float64 = 1e-4, niter::Int = 500, α::Float64 = 0.1, verbose = false)
+
+    w = soc[i]
+    C = soc.C[i]
+
+    x = - sqrt(K)*w
+
+    t = 1.
+    n = 0.
+
+    if verbose xs = zeros(K+1, niter) end
+
+    @inbounds while t > err && n < niter  
+
+        h = w ⋅ x
+        Γ = x ⋅ (C * x)/K
+
+        xnew = α .* x + (1 - α) .* (2 .* (C * x) ./ Γ .- K .* w ./ h)
+
+        t = norm(xnew - x)
+        n += 1.
+
+        if verbose 
+            xs[1:K, Int(n)] = xnew
+            xs[K+1, Int(n)] = t
+        end
+
+        x = sqrt(K) * normalize(xnew[:])
+    end
+    
+    if verbose
+        return xs[:, 1:Int(n)], n
+    end
+
+    return x
+end
+
+"""
+    pickIssue(w::Vector{Float64}, C::Matrix{Float64}; err::Float64 = 1e-4, niter::Int = 500, α::Float64 = 0.1, verbose = false)
+
+Pick a specific issue x trying to maximize the change in trust of agent-listener w which has covariance-doubts C
+"""
+function pickIssue(w::Vector{Float64}, C::Matrix{Float64};
+                  err::Float64 = 1e-4, niter::Int = 500, α::Float64 = 0.1, verbose = false)
+    t = 1.
+    n = 0.
+
+    K = length(w)
+    x = - w
+
+    if ! issymmetric(C) error("Fix entries of C. It is not symmetric") end
+
+    xnew = zeros(x)
+
+    if verbose xs = zeros(K+1, niter) end
+
+    @inbounds while t > err && n < niter  
+
+        h = w ⋅ x
+        Γ = x ⋅ (C * x)/K
+
+        xnew = α .* x + (1 - α) .* (2 .* (C * x) ./ Γ .- K .* w ./ h)
+
+        t = norm(xnew - x)
+        n += 1.
+
+        if verbose 
+            xs[1:K, Int(n)] = xnew
+            xs[K+1, Int(n)] = t
+        end
+
+        x = sqrt(K) * normalize(xnew[:])
+    end
+    
+    if verbose
+        return xs, n
+    end
+
+    return x, n
+end
